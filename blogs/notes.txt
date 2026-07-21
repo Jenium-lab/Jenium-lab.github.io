@@ -1,0 +1,4 @@
+Operational notes:
+- Review monitoring dashboards every morning
+- Confirm backup jobs and incident logs
+- Keep deployment changes documented

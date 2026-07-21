@@ -1,0 +1,32 @@
+[
+  {
+    "name": "cloud-ops.md",
+    "title": "Cloud operations in practice",
+    "category": "Infrastructure",
+    "date": "2026-07-21"
+  },
+  {
+    "name": "automation-notes.md",
+    "title": "Automation notes for resilient systems",
+    "category": "DevOps",
+    "date": "2026-07-21"
+  },
+  {
+    "name": "notes.txt",
+    "title": "Ops notes as text",
+    "category": "Notes",
+    "date": "2026-07-21"
+  },
+  {
+    "name": "guide.pdf",
+    "title": "System guide PDF",
+    "category": "Reference",
+    "date": "2026-07-21"
+  },
+  {
+    "name": "sample.docx",
+    "title": "Architecture brief document",
+    "category": "Document",
+    "date": "2026-07-21"
+  }
+]

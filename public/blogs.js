@@ -1,21 +1,12 @@
-const BLOG_BASE_URL = 'https://raw.githubusercontent.com/Jenium-lab/Portfolio1/main/public/blogs/';
-const BLOG_INDEX_URL = `${BLOG_BASE_URL}index.json`;
 const LOCAL_BLOG_BASE_URL = './blogs/';
+const BLOG_INDEX_URL = `${LOCAL_BLOG_BASE_URL}index.json`;
 
 async function loadBlogIndex() {
-  try {
-    const response = await fetch(BLOG_INDEX_URL);
-    if (!response.ok) {
-      throw new Error('Remote blog index unavailable');
-    }
-    return response.json();
-  } catch (error) {
-    const fallbackResponse = await fetch(`${LOCAL_BLOG_BASE_URL}index.json`);
-    if (!fallbackResponse.ok) {
-      throw new Error('Unable to load blog index');
-    }
-    return fallbackResponse.json();
+  const response = await fetch(BLOG_INDEX_URL);
+  if (!response.ok) {
+    throw new Error('Unable to load blog index');
   }
+  return response.json();
 }
 
 function renderMarkdown(markdown) {
@@ -87,44 +78,32 @@ function getFileType(name) {
 
 async function renderContent(post) {
   const fileName = encodeURIComponent(post.name);
-  const remoteUrl = `${BLOG_BASE_URL}${fileName}`;
   const localUrl = `${LOCAL_BLOG_BASE_URL}${fileName}`;
-
-  try {
-    const response = await fetch(remoteUrl);
-    if (!response.ok) {
-      throw new Error('Remote file unavailable');
-    }
-
-    const fileType = getFileType(post.name);
-    const text = await response.text();
-
-    if (fileType === 'markdown') {
-      return { html: renderMarkdown(text), raw: text };
-    }
-
-    if (fileType === 'text') {
-      return { html: `<pre>${text}</pre>`, raw: text };
-    }
-
-    if (fileType === 'pdf') {
-      return { html: `<p>PDF preview is available via download below.</p><a class="btn secondary" href="${remoteUrl}" target="_blank" rel="noreferrer">Open PDF</a>`, raw: '' };
-    }
-
-    if (fileType === 'document') {
-      return { html: `<p>Document file detected.</p><a class="btn secondary" href="${remoteUrl}" target="_blank" rel="noreferrer">Download document</a>`, raw: '' };
-    }
-
-    return { html: `<p>File type not supported yet.</p>`, raw: '' };
-  } catch (error) {
-    const fallbackResponse = await fetch(localUrl);
-    if (!fallbackResponse.ok) {
-      return `<p>Unable to load ${post.name}</p>`;
-    }
-
-    const fallbackText = await fallbackResponse.text();
-    return { html: `<pre>${fallbackText}</pre>`, raw: fallbackText };
+  const response = await fetch(localUrl);
+  if (!response.ok) {
+    return `<p>Unable to load ${post.name}</p>`;
   }
+
+  const fileType = getFileType(post.name);
+  const text = await response.text();
+
+  if (fileType === 'markdown') {
+    return { html: renderMarkdown(text), raw: text };
+  }
+
+  if (fileType === 'text') {
+    return { html: `<pre>${text}</pre>`, raw: text };
+  }
+
+  if (fileType === 'pdf') {
+    return { html: `<p>PDF preview is available via download below.</p><a class="btn secondary" href="${localUrl}" target="_blank" rel="noreferrer">Open PDF</a>`, raw: '' };
+  }
+
+  if (fileType === 'document') {
+    return { html: `<p>Document file detected.</p><a class="btn secondary" href="${localUrl}" target="_blank" rel="noreferrer">Download document</a>`, raw: '' };
+  }
+
+  return { html: `<p>File type not supported yet.</p>`, raw: '' };
 }
 
 async function renderBlogs() {

@@ -41,7 +41,15 @@ function renderMarkdown(markdown) {
   }
 
   const escaped = escapeHtml(markdown);
-  const html = escaped
+
+  // Pull out fenced code blocks so the newline transforms below don't corrupt them
+  const codeBlocks = [];
+  const withPlaceholders = escaped.replace(/```[\w+-]*\n?([\s\S]*?)```/g, (match, code) => {
+    codeBlocks.push(`<pre><code>${code}</code></pre>`);
+    return `\u0000${codeBlocks.length - 1}\u0000`;
+  });
+
+  const html = withPlaceholders
     .replace(/^# (.*$)/gm, '<h1>$1</h1>')
     .replace(/^## (.*$)/gm, '<h2>$1</h2>')
     .replace(/^### (.*$)/gm, '<h3>$1</h3>')
@@ -50,7 +58,9 @@ function renderMarkdown(markdown) {
     .replace(/\n{2,}/g, '</p><p>')
     .replace(/\n/g, '<br />')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>');
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\u0000(\d+)\u0000/g, (match, i) => codeBlocks[Number(i)] || '');
 
   return `<div class="markdown-content">${html}</div>`;
 }

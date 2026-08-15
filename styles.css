@@ -1018,6 +1018,109 @@ a.contact-card:hover {
 }
 
 /* ---------------------------------------------------------------
+   DESKTOP SPACING — roomier so large screens don't feel congested
+--------------------------------------------------------------- */
+@media (min-width: 901px) {
+  .page-shell {
+    max-width: 1200px;
+    padding: 32px 32px 120px;
+  }
+
+  .nav {
+    padding: 18px 0;
+    margin-bottom: 56px;
+  }
+
+  .hero {
+    gap: 64px;
+    padding-top: 24px;
+  }
+
+  .lead {
+    font-size: 1.18rem;
+    max-width: 36em;
+  }
+
+  .actions {
+    margin-top: 32px;
+    gap: 14px;
+  }
+
+  .hero-stats {
+    margin-top: 42px;
+  }
+
+  .hero-stats div {
+    padding: 18px 20px;
+  }
+
+  .hero-panel {
+    padding: 32px;
+  }
+
+  .marquee {
+    margin: 56px 0 12px;
+  }
+
+  .section {
+    padding-top: 104px;
+  }
+
+  .section-heading {
+    margin-bottom: 20px;
+  }
+
+  .intro {
+    gap: 64px;
+  }
+
+  .cards,
+  .project-list,
+  .skills-grid,
+  .contact-grid {
+    gap: 24px;
+  }
+
+  .cards article,
+  .project-card {
+    padding: 28px 26px 26px;
+  }
+
+  .project-list,
+  .skills-grid {
+    margin-top: 26px;
+  }
+
+  .blog-preview {
+    margin-top: 26px;
+  }
+
+  .blog-preview-item {
+    padding: 18px 6px;
+  }
+
+  .blog-card {
+    padding: 22px 8px;
+  }
+
+  .contact-grid {
+    margin-top: 26px;
+  }
+
+  .contact-card {
+    padding: 22px 24px;
+  }
+
+  .footer {
+    margin-top: 110px;
+  }
+
+  .reader {
+    padding: 44px 52px;
+  }
+}
+
+/* ---------------------------------------------------------------
    MOTION + RESPONSIVE
 --------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {

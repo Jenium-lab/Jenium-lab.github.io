@@ -4,5 +4,17 @@
     "title": "Masakari ha runbook",
     "category": "General",
     "date": "2026-08-15"
+  },
+  {
+    "name": "octavia-lbaas-guide.md",
+    "title": "Octavia lbaas guide",
+    "category": "General",
+    "date": "2026-08-15"
+  },
+  {
+    "name": "openstack-ceph-complete-setup.md",
+    "title": "OpenStack + Ceph complete setup",
+    "category": "General",
+    "date": "2026-08-15"
   }
 ]

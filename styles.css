@@ -820,6 +820,9 @@ a.contact-card:hover {
 .markdown-content {
   line-height: 1.75;
   color: var(--ink-2);
+  text-align: justify;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .markdown-content h1,

@@ -18,10 +18,8 @@ async function renderSinglePost() {
 
     const titleEl = document.getElementById('post-title');
     const metaEl = document.getElementById('post-meta');
-    const fileEl = document.getElementById('post-file');
     if (titleEl) titleEl.textContent = post.title;
     if (metaEl) metaEl.textContent = `${post.category || 'General'} • ${post.date || ''}`;
-    if (fileEl) fileEl.textContent = `./blogs/${post.name}`;
     document.title = `${post.title} | Srijan Tangnami Magar`;
 
     const result = await renderContent(post);

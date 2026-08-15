@@ -113,15 +113,37 @@ h1 {
   display: flex;
   gap: 24px;
 }
-.markdown-content h1, .markdown-content h2, .markdown-content h3 { margin-top: 1rem; }
-.markdown-content ul { padding-left: 1.2rem; }
+.markdown-content h1, .markdown-content h2, .markdown-content h3, .markdown-content h4, .markdown-content h5 { margin-top: 1.4rem; margin-bottom: 0.5rem; line-height: 1.35; }
+.markdown-content h1 { font-size: 1.7rem; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+.markdown-content h2 { font-size: 1.35rem; }
+.markdown-content h3 { font-size: 1.12rem; }
+.markdown-content h4 { font-size: 1rem; }
+.markdown-content p { margin: 0.7rem 0; }
+.markdown-content ul, .markdown-content ol { padding-left: 1.4rem; margin: 0.6rem 0; }
+.markdown-content ul li, .markdown-content ol li { margin: 0.3rem 0; }
+.markdown-content a { color: var(--accent); }
+.markdown-content a:hover { text-decoration: underline; }
+.markdown-content img { max-width: 100%; border-radius: 10px; border: 1px solid var(--border); }
+.markdown-content hr { border: none; border-top: 1px dashed var(--border); margin: 1.8rem 0; }
 .markdown-content pre {
-  background: rgba(255, 255, 255, 0.04);
+  position: relative;
+  background: rgba(3, 10, 20, 0.72);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 14px;
+  padding: 40px 16px 14px;
   overflow-x: auto;
-  line-height: 1.6;
+  line-height: 1.65;
+  font-size: 0.9rem;
+}
+.markdown-content pre.has-copy::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 10px;
+  left: 16px;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 .markdown-content pre code {
   background: none;
@@ -132,12 +154,18 @@ h1 {
   background: rgba(84, 215, 255, 0.1);
   border-radius: 6px;
   padding: 2px 6px;
-  font-size: 0.9em;
+  font-size: 0.88em;
+}
+.markdown-content pre code:not(.hljs) {
+  color: var(--text);
 }
 .markdown-content table {
   border-collapse: collapse;
   width: 100%;
   margin: 12px 0;
+  font-size: 0.95rem;
+  display: block;
+  overflow-x: auto;
 }
 .markdown-content th,
 .markdown-content td {
@@ -147,18 +175,93 @@ h1 {
 }
 .markdown-content th {
   background: rgba(255, 255, 255, 0.05);
+  font-weight: 600;
 }
+.markdown-content tr:nth-child(even) td { background: rgba(255, 255, 255, 0.02); }
 .markdown-content blockquote {
   margin: 12px 0;
   padding: 4px 16px;
   border-left: 3px solid var(--accent);
   background: rgba(84, 215, 255, 0.06);
   border-radius: 0 10px 10px 0;
+  color: var(--muted);
 }
-.post-toc { margin-bottom: 12px; }
+
+/* copy button on code blocks */
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.markdown-content pre:hover .copy-btn,
+.copy-btn:focus { opacity: 1; }
+.copy-btn:hover { color: var(--text); border-color: var(--accent); }
+
+/* highlight.js — dark theme tuned to site palette */
+.markdown-content .hljs {
+  color: var(--text);
+  background: transparent;
+}
+.markdown-content .hljs-comment,
+.markdown-content .hljs-quote { color: #6d8aa6; font-style: italic; }
+.markdown-content .hljs-keyword,
+.markdown-content .hljs-selector-tag,
+.markdown-content .hljs-literal,
+.markdown-content .hljs-doctag,
+.markdown-content .hljs-meta .hljs-keyword { color: #54d7ff; }
+.markdown-content .hljs-string,
+.markdown-content .hljs-regexp,
+.markdown-content .hljs-addition,
+.markdown-content .hljs-attribute { color: #9ee493; }
+.markdown-content .hljs-number,
+.markdown-content .hljs-symbol,
+.markdown-content .hljs-bullet,
+.markdown-content .hljs-link,
+.markdown-content .hljs-variable,
+.markdown-content .hljs-template-variable { color: #ffb86b; }
+.markdown-content .hljs-title,
+.markdown-content .hljs-title.class_,
+.markdown-content .hljs-section,
+.markdown-content .hljs-function .hljs-title { color: #82aaff; }
+.markdown-content .hljs-built_in,
+.markdown-content .hljs-type,
+.markdown-content .hljs-builtin-name { color: #ffd580; }
+.markdown-content .hljs-params,
+.markdown-content .hljs-property,
+.markdown-content .hljs-selector-id,
+.markdown-content .hljs-selector-class { color: #d2a8ff; }
+.markdown-content .hljs-meta,
+.markdown-content .hljs-meta .hljs-string { color: #8caecb; }
+.markdown-content .hljs-emphasis { font-style: italic; }
+.markdown-content .hljs-strong { font-weight: 700; }
+
+.post-toc {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+.post-toc strong {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
 .post-toc ul { list-style: none; padding: 0; margin: 8px 0 0 0; }
-.post-toc li { margin-bottom: 6px; }
+.post-toc li { margin-bottom: 4px; font-size: 0.92rem; }
 .post-toc a { color: var(--accent); text-decoration: none; }
+.post-toc a:hover { text-decoration: underline; }
 
 .btn.primary {
   background: linear-gradient(90deg, var(--accent), var(--accent-2));

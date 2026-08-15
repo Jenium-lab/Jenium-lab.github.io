@@ -1,3 +1,45 @@
+async function addCopyButtons(root) {
+  root.querySelectorAll('pre').forEach((pre) => {
+    const code = pre.querySelector('code');
+    if (code) {
+      const m = (code.className || '').match(/language-([\w-]+)/);
+      if (m) pre.setAttribute('data-lang', m[1]);
+    }
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.setAttribute('aria-label', 'Copy code to clipboard');
+    btn.textContent = 'copy';
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      const text = code ? code.innerText : pre.innerText;
+      const done = () => {
+        btn.textContent = 'copied';
+        setTimeout(() => { btn.textContent = 'copy'; }, 1500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+      } else {
+        fallbackCopy(text, done);
+      }
+    });
+    pre.classList.add('has-copy');
+    pre.appendChild(btn);
+  });
+}
+
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) { /* ignore */ }
+  document.body.removeChild(ta);
+  done();
+}
+
 async function renderSinglePost() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get('post');
@@ -26,6 +68,8 @@ async function renderSinglePost() {
     const contentHtml = (result && result.html) ? result.html : result;
     const raw = (result && result.raw) ? result.raw : '';
     if (app) app.innerHTML = contentHtml;
+
+    if (app) addCopyButtons(app);
 
     const slugify = (s) => String(s).toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
     if (app) {

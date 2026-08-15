@@ -16,7 +16,7 @@ function renderMarkdown(markdown) {
   }
 
   if (typeof window !== 'undefined' && window.marked && window.DOMPurify) {
-    const rawHtml = window.marked.parse(markdown);
+    const rawHtml = window.marked.parse(markdown, { gfm: true, breaks: true });
     const clean = window.DOMPurify.sanitize(rawHtml);
     // Add ids to headings
     const container = document.createElement('div');
@@ -24,6 +24,12 @@ function renderMarkdown(markdown) {
     container.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach((h) => {
       if (!h.id) h.id = slugify(h.textContent || h.innerText || 'heading');
     });
+    // Syntax-highlight fenced code blocks when highlight.js is available
+    if (window.hljs) {
+      container.querySelectorAll('pre code').forEach((block) => {
+        try { window.hljs.highlightElement(block); } catch (e) { /* ignore */ }
+      });
+    }
     return container.innerHTML;
   }
 

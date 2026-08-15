@@ -651,58 +651,6 @@ a.blog-card:hover {
   letter-spacing: 0.04em;
 }
 
-/* hero status console */
-.panel-console {
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(3, 10, 20, 0.92);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(4px);
-}
-.pc-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding-bottom: 10px;
-  margin-bottom: 8px;
-  border-bottom: 1px dashed var(--border);
-}
-.pc-live {
-  color: #34d399;
-  font-weight: 700;
-  animation: pulse 2.4s ease-in-out infinite;
-}
-.pc-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0;
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-.pc-row b {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-.pc-row .up { color: #34d399; }
-.pc-row .warn { color: #fbbf24; }
-.pc-foot {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed var(--border);
-  font-size: 0.72rem;
-  color: var(--muted);
-  opacity: 0.7;
-}
-
 /* marquee band */
 .marquee {
   overflow: hidden;
@@ -849,7 +797,7 @@ a.contact-card:hover {
 @media (prefers-reduced-motion: reduce) {
   .js .reveal { opacity: 1; transform: none; }
   .marquee-track { animation: none; }
-  .avail .dot, .pc-live { animation: none; }
+  .avail .dot { animation: none; }
 }
 
 /* dim helper */

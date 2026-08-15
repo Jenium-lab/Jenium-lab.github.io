@@ -820,9 +820,6 @@ a.contact-card:hover {
 .markdown-content {
   line-height: 1.75;
   color: var(--ink-2);
-  text-align: justify;
-  -webkit-hyphens: auto;
-  hyphens: auto;
 }
 
 .markdown-content h1,
@@ -1028,11 +1025,6 @@ a.contact-card:hover {
     max-width: 1440px;
     padding: 32px 40px 120px;
   }
-
-  .page-shell.wide {
-    max-width: none;
-  }
-}
 
   .nav {
     padding: 18px 0;

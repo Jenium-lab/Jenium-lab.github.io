@@ -62,7 +62,19 @@ async function renderSinglePost() {
     const metaEl = document.getElementById('post-meta');
     if (titleEl) titleEl.textContent = post.title;
     if (metaEl) metaEl.textContent = `${post.category || 'General'} • ${post.date || ''}`;
-    document.title = `${post.title} | Srijan Tangnami Magar`;
+    const pageTitle = `${post.title} | Srijan Tangnami Magar`;
+    document.title = pageTitle;
+    const fullUrl = `${window.location.origin}${window.location.pathname}?post=${encodeURIComponent(name)}`;
+    const setMeta = (sel, attr, val) => {
+      const el = document.querySelector(sel);
+      if (el) el.setAttribute(attr, val);
+    };
+    setMeta('meta[name="description"]', 'content', `Srijan Tangnami Magar: ${post.title}. Infrastructure engineering notes on cloud, networking, and automation.`);
+    setMeta('meta[property="og:title"]', 'content', pageTitle);
+    setMeta('meta[property="og:url"]', 'content', fullUrl);
+    setMeta('meta[name="twitter:title"]', 'content', pageTitle);
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.href = fullUrl;
 
     const result = await renderContent(post);
     const contentHtml = (result && result.html) ? result.html : result;

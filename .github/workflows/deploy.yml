@@ -25,6 +25,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Generate blog index
+        run: python3 scripts/generate_blog_index.py
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

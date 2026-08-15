@@ -3,18 +3,21 @@
     "name": "masakari-ha-runbook.md",
     "title": "Masakari ha runbook",
     "category": "General",
-    "date": "2026-08-15"
+    "date": "2026-08-15",
+    "excerpt": "Environment: Kolla-Ansible 2025.1, Ubuntu Noble, Pacemaker/Corosync + pacemakerremote, Masakari 19.0.1, Nova, Ceph-backed compute nodes. Cluster: 3 controllers\u2026"
   },
   {
     "name": "octavia-lbaas-guide.md",
     "title": "Octavia lbaas guide",
     "category": "General",
-    "date": "2026-08-15"
+    "date": "2026-08-15",
+    "excerpt": "Environment: Kolla-Ansible 2025.2, Ubuntu Noble, OpenStack 2025.2, OVN, Octavia with the Amphora driver, running as a nested cloud inside an outer OpenStack de\u2026"
   },
   {
     "name": "openstack-ceph-complete-setup.md",
     "title": "OpenStack + Ceph complete setup",
     "category": "General",
-    "date": "2026-08-15"
+    "date": "2026-08-15",
+    "excerpt": "Environment: Kolla-Ansible stable/2025.1, Ubuntu, Ceph Reef managed via cephadm, running as a nested cloud inside an outer OpenStack deployment the outer cloud\u2026"
   }
 ]

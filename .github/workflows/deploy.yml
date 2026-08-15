@@ -28,6 +28,14 @@ jobs:
       - name: Generate blog index
         run: python3 scripts/generate_blog_index.py
 
+      - name: Render blog posts to static pages
+        run: |
+          python3 -m pip install --quiet markdown
+          python3 scripts/render_posts.py
+
+      - name: Generate sitemap
+        run: python3 scripts/generate_sitemap.py
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

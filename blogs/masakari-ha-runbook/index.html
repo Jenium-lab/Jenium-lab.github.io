@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Masakari ha runbook | Srijan Tangnami Magar</title>
+    <meta name="description" content="Environment: Kolla-Ansible 2025.1, Ubuntu Noble, Pacemaker/Corosync + pacemakerremote, Masakari 19.0.1, Nova, Ceph-backed compute nodes. Cluster: 3 controllers…" />
+    <link rel="canonical" href="https://srijantangnamimagar.com.np/blogs/masakari-ha-runbook/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Srijan Tangnami Magar" />
+    <meta property="og:title" content="Masakari ha runbook | Srijan Tangnami Magar" />
+    <meta property="og:description" content="Environment: Kolla-Ansible 2025.1, Ubuntu Noble, Pacemaker/Corosync + pacemakerremote, Masakari 19.0.1, Nova, Ceph-backed compute nodes. Cluster: 3 controllers…" />
+    <meta property="og:url" content="https://srijantangnamimagar.com.np/blogs/masakari-ha-runbook/" />
+    <meta property="og:image" content="https://srijantangnamimagar.com.np/gemini-svg.svg" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Masakari ha runbook | Srijan Tangnami Magar" />
+    <meta name="twitter:description" content="Environment: Kolla-Ansible 2025.1, Ubuntu Noble, Pacemaker/Corosync + pacemakerremote, Masakari 19.0.1, Nova, Ceph-backed compute nodes. Cluster: 3 controllers…" />
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Masakari ha runbook",
+  "description": "Environment: Kolla-Ansible 2025.1, Ubuntu Noble, Pacemaker/Corosync + pacemakerremote, Masakari 19.0.1, Nova, Ceph-backed compute nodes. Cluster: 3 controllers\u2026",
+  "image": "https://srijantangnamimagar.com.np/gemini-svg.svg",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://srijantangnamimagar.com.np/blogs/masakari-ha-runbook/"
+  },
+  "datePublished": "2026-08-15",
+  "dateModified": "2026-08-15",
+  "author": {
+    "@type": "Person",
+    "name": "Srijan Tangnami Magar",
+    "url": "https://srijantangnamimagar.com.np"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Srijan Tangnami Magar",
+    "url": "https://srijantangnamimagar.com.np"
+  }
+}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/gemini-svg.svg" />
+    <link rel="stylesheet" href="/styles.css?v=9" />
+    <script>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <div id="top" class="page-shell">
+
+      <nav class="nav" role="navigation">
+        <a class="brand" href="/index.html">
+          <span class="brand-mark">ST</span>
+          <span class="brand-name">Srijan&nbsp;<em>T.&nbsp;Magar</em></span>
+        </a>
+        <div class="nav-links">
+          <a href="/index.html#experience">Experience</a>
+          <a href="/index.html#skills">Skills</a>
+          <a href="/index.html#blogs">Blogs</a>
+          <a href="/index.html#contact">Contact</a>
+          <a class="nav-cta" href="/blogs.html">Blog archive&nbsp;&#x2197;</a>
+        </div>
+      </nav>
+
+      <header class="hero short-hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Blog Post</p>
+          <h1>Masakari ha runbook</h1>
+          <p class="meta">General &bull; 2026-08-15</p>
+          <div class="actions">
+            <a class="btn primary" href="/blogs.html">&#8592; Back to blog list</a>
+            <a class="btn secondary" href="/index.html">Home</a>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="section projects">
+          <article class="reader">
+            <nav class="post-toc"><strong>On this page</strong><ul><li style="margin-left:0px"><a href="#1-architecture-overview">1. Architecture Overview</a></li><li style="margin-left:0px"><a href="#2-key-configuration">2. Key Configuration</a></li><li style="margin-left:0px"><a href="#3-problems-found-how-they-were-solved">3. Problems Found &amp; How They Were Solved</a></li><li style="margin-left:0px"><a href="#4-how-to-test-correctly-full-realistic-failover-test">4. How To Test Correctly (Full, Realistic Failover Test)</a></li><li style="margin-left:0px"><a href="#5-cleanup-after-testing">5. Cleanup After Testing</a></li><li style="margin-left:0px"><a href="#6-quick-reference-command-cheat-sheet">6. Quick Reference — Command Cheat Sheet</a></li><li style="margin-left:0px"><a href="#7-open-items-recommendations">7. Open Items / Recommendations</a></li></ul></nav>
+            <div class="content markdown-content"><p><strong>Environment:</strong> Kolla-Ansible (2025.1, Ubuntu Noble), Pacemaker/Corosync + <code>pacemaker_remote</code>, Masakari 19.0.1, Nova, Ceph-backed compute nodes.<br>
+<strong>Cluster:</strong> 3 controllers (<code>controller-1/2/3</code>) + 2 compute nodes as pacemaker remote nodes (<code>compute-1</code>, <code>compute-2</code>).<br>
+<strong>Segment:</strong> <code>HA-Compute-Segment</code> (<code>recovery_method: auto</code>, <code>service_type: compute</code>).</p>
+<hr>
+<h2 id="1-architecture-overview">1. Architecture Overview</h2>
+<p>Masakari's automatic host-failure recovery in this deployment relies on a chain of independent components. <strong>Every one of them has to work correctly</strong> for auto-evacuation to succeed — a failure anywhere in the chain silently breaks the whole pipeline without necessarily showing an obvious error.</p>
+<pre><code>[Pacemaker/Corosync cluster on controllers]
+        |  monitors pacemaker_remote agent on each compute node
+        v
+[pacemaker_remote container on each compute node]
+        |  reports node up/down to Pacemaker (crm_mon)
+        v
+[masakari-hostmonitor container on controllers]
+        |  polls crm_mon, detects node state changes, sends notification
+        v
+[masakari-api / masakari-engine]
+        |  runs taskflow recovery workflow: Disable -&gt; Prepare -&gt; Evacuate
+        v
+[Nova API]
+        |  evacuate instance, requires compute service to be &quot;down&quot;
+        v
+[Instance moved to a healthy compute host]
+</code></pre>
+<p>Two health signals are <strong>independent</strong> and both matter:<br>
+- <strong>Pacemaker/pacemaker_remote</strong> — cluster membership / reachability of the node.<br>
+- <strong>Nova's own <code>nova-compute</code> service heartbeat</strong> — tracked via <code>report_interval</code> / <code>service_down_time</code>, completely separate from Pacemaker.</p>
+<p>Masakari's evacuate call only succeeds once <strong>both</strong> signals agree the host is genuinely down.</p>
+<hr>
+<h2 id="2-key-configuration">2. Key Configuration</h2>
+<h3 id="21-masakari-hostmonitor-etckollaconfigmasakarimasakari-hostmonitorconf-on-the-deploy-host">2.1 masakari-hostmonitor (<code>/etc/kolla/config/masakari/masakari-hostmonitor.conf</code> on the deploy host)</h3>
+<pre><code class="language-ini">[host]
+restrict_to_remotes = true
+</code></pre>
+<p><strong>This is critical and non-default.</strong> Without it, hostmonitor reads node status via <code>cibadmin</code>/CIB (correct for full cluster members) instead of <code>crm_mon</code> (required for <code>pacemaker_remote</code> type nodes). See Problem #2 below — without this flag, compute node failures are <strong>never</strong> detected, silently.</p>
+<h3 id="22-masakari-engine-etckollaconfigmasakarimasakari-engineconf">2.2 masakari-engine (<code>/etc/kolla/config/masakari/masakari-engine.conf</code>)</h3>
+<p>Default values that matter for recovery timing (from <code>masakari/conf/engine.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wait_period_after_service_update</code></td>
+<td>180s</td>
+<td>Time masakari-engine sleeps after disabling the Nova compute service, before evacuating.</td>
+</tr>
+<tr>
+<td><code>wait_period_after_evacuation</code></td>
+<td>90s</td>
+<td>Time to wait/verify an instance actually evacuated.</td>
+</tr>
+<tr>
+<td><code>duplicate_notification_detection_interval</code></td>
+<td>180s</td>
+<td>Window in which identical notifications for the same host are deduped.</td>
+</tr>
+<tr>
+<td><code>verify_interval</code></td>
+<td>1s</td>
+<td>Polling interval used internally by looping calls.</td>
+</tr>
+</tbody>
+</table>
+<p>Masakari's <code>DisableComputeServiceTask</code> <strong>only calls <code>enable_disable_service()</code></strong> (administrative disable) — it does <strong>not</strong> call <code>--force-down</code>. It relies entirely on Nova's own heartbeat timeout (<code>service_down_time</code>) having already marked the service down by the time the wait period elapses.</p>
+<h3 id="23-nova-timing-novaconf-defaults-not-overridden-in-this-deployment">2.3 Nova timing (<code>nova.conf</code>, defaults — not overridden in this deployment)</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>report_interval</code></td>
+<td>10s</td>
+<td>How often <code>nova-compute</code> reports a heartbeat.</td>
+</tr>
+<tr>
+<td><code>service_down_time</code></td>
+<td>60s</td>
+<td>If no heartbeat for this long, Nova considers the compute service down.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Relationship that makes evacuation work:</strong> Masakari's 180s wait period is safely longer than Nova's 60s down-detection window, so by the time Masakari attempts evacuation, Nova should already see the service as down — <em>if</em> nothing else is interfering (see Problem #3).</p>
+<h3 id="24-persisting-config-changes-correctly">2.4 Persisting config changes correctly</h3>
+<p>Kolla regenerates <code>/etc/kolla/&lt;service&gt;/&lt;file&gt;.conf</code> on every <code>kolla-ansible deploy</code>/<code>reconfigure</code> from a merge of:</p>
+<pre><code>role default template -&gt; node_custom_config/global.conf -&gt; node_custom_config/masakari/&lt;service&gt;.conf
+  -&gt; node_custom_config/masakari/masakari-monitors.conf -&gt; per-host override
+</code></pre>
+<p><code>node_custom_config</code> = <code>/etc/kolla/config</code> <strong>on the Ansible/deploy host</strong> (in this environment: <code>jumpserver</code>), not on the controllers themselves.</p>
+<p>Editing the live file directly inside <code>/etc/kolla/&lt;service&gt;/</code> on a controller works immediately but <strong>will be silently reverted</strong> by the next <code>kolla-ansible deploy</code>/<code>reconfigure</code>. Always mirror the change into <code>/etc/kolla/config/masakari/...</code> on the deploy host, then run:</p>
+<pre><code class="language-bash">kolla-ansible reconfigure -i &lt;inventory&gt; --tags masakari
+</code></pre>
+<hr>
+<h2 id="3-problems-found-how-they-were-solved">3. Problems Found &amp; How They Were Solved</h2>
+<h3 id="problem-1-pacemaker_remote-authkey-mismatch-compute-nodes-stuck-remoteoffline">Problem 1 — <code>pacemaker_remote</code> authkey mismatch (compute nodes stuck <code>RemoteOFFLINE</code>)</h3>
+<p><strong>Symptom:</strong></p>
+<pre><code>pcs status
+  RemoteOFFLINE: [ compute-1 compute-2 ]
+  Failed Resource Actions:
+  * compute-1 start ... Timed Out: Connection refused without enough time to retry
+</code></pre>
+<p><code>pacemaker-remoted.log</code> on the compute node showed:</p>
+<pre><code>error: TLS handshake with remote client failed: The TLS connection was non-properly terminated. | rc=-110
+</code></pre>
+<p><strong>Root cause:</strong> The <code>authkey</code> used for the TLS handshake between controllers and the <code>pacemaker_remote</code> agent didn't match. The <strong>on-disk source files</strong> (<code>/etc/kolla/hacluster-pacemaker/authkey</code> on controllers, <code>/etc/kolla/hacluster-pacemaker-remote/authkey</code> on computes) were actually already correct/consistent everywhere — but the <strong>running container</strong> had an older, stale copy loaded into memory from before the file was last corrected. Kolla only copies config into the container at container <strong>start</strong> (<code>KOLLA_CONFIG_STRATEGY=COPY_ALWAYS</code>), so a running container never picks up a host-side file change until restarted.</p>
+<p><strong>Fix:</strong></p>
+<pre><code class="language-bash"># on each affected compute node
+docker restart hacluster_pacemaker_remote
+
+# on a controller, once the remote agent is back up
+docker exec hacluster_pacemaker pcs resource cleanup compute-1
+docker exec hacluster_pacemaker pcs resource cleanup compute-2
+</code></pre>
+<p><strong>Verification:</strong></p>
+<pre><code class="language-bash">docker exec hacluster_pacemaker_remote md5sum /etc/pacemaker/authkey   # compare against controller's copy
+docker exec hacluster_pacemaker pcs status                             # expect RemoteOnline / Started
+</code></pre>
+<hr>
+<h3 id="problem-2-masakari-hostmonitor-never-detects-compute-node-failures-restrict_to_remotes-false">Problem 2 — masakari-hostmonitor never detects compute node failures (<code>restrict_to_remotes = false</code>)</h3>
+<p><strong>Symptom:</strong> Even after Pacemaker correctly showed a compute node <code>RemoteOFFLINE</code>, <code>masakari-hostmonitor.log</code> repeated forever:</p>
+<pre><code>Recognized 'compute-1' as a new member of cluster. Host status is 'None'.
+</code></pre>
+<p>No notification was ever sent, regardless of how long you waited.</p>
+<p><strong>Root cause (confirmed by reading the masakari-monitors source, <code>handle_host.py</code>):</strong></p>
+<pre><code class="language-python">if CONF.host.restrict_to_remotes:
+    status_func = self._check_host_status_by_crm_mon      # correct for pacemaker_remote nodes
+else:
+    status_func = self._check_host_status_by_cibadmin      # correct only for full cluster members
+</code></pre>
+<p>With <code>restrict_to_remotes = false</code> (the shipped default), hostmonitor read node state via <code>cibadmin</code>/CIB, which doesn't carry usable <code>crmd</code> state for <code>pacemaker_remote</code>-type nodes — so <code>old_status</code> never resolves away from <code>None</code>, and the "is this a status change?" check never fires for compute nodes. Controllers (full cluster members) worked fine the whole time, which is why this bug was easy to miss at first.</p>
+<p><strong>Fix:</strong> set <code>restrict_to_remotes = true</code>.<br>
+- Immediate/live fix: edit <code>/etc/kolla/masakari-hostmonitor/masakari-monitors.conf</code> directly on the controller, then <code>docker restart masakari_hostmonitor</code>.<br>
+- <strong>Persistent fix (required):</strong><br>
+<code>bash
+  # on the deploy host (jumpserver), under /etc/kolla/config
+  mkdir -p /etc/kolla/config/masakari
+  cat &gt; /etc/kolla/config/masakari/masakari-hostmonitor.conf &lt;&lt; 'EOF'
+  [host]
+  restrict_to_remotes = true
+  EOF
+  kolla-ansible reconfigure -i &lt;inventory&gt; --tags masakari</code></p>
+<p><strong>Verification:</strong> after restart, watch the log for a real transition instead of the endless "new member" message:</p>
+<pre><code>'compute-1' is 'offline' (current: 'offline').
+Send a notification. {'type': 'COMPUTE_HOST', ...}
+</code></pre>
+<hr>
+<h3 id="problem-3-rogue-native-pacemakercorosync-install-on-compute-2-blocking-pacemaker_remote">Problem 3 — Rogue native Pacemaker/Corosync install on <code>compute-2</code> blocking <code>pacemaker_remote</code></h3>
+<p><strong>Symptom:</strong> <code>pacemaker_remote</code> container crash-looped continuously:</p>
+<pre><code>error: Could not bind AF_UNIX (): Address already in use (98)
+error: Could not start lrmd IPC server: Address already in use (-98)
+error: Failed to create IPC server: shutting down and inhibiting respawn
+</code></pre>
+<p>Pacemaker on the controllers reported <code>Connection refused</code> for <code>compute-2</code> even though the host was reachable.</p>
+<p><strong>Root cause:</strong> <code>compute-2</code> had a <strong>complete, independent, natively-installed Pacemaker+Corosync cluster stack</strong> running directly on the host OS (<code>pacemakerd</code>, <code>pacemaker-based</code>, <code>pacemaker-fenced</code>, <code>pacemaker-execd</code>, etc. — the full stack, not just <code>pacemaker-remoted</code>), started via native <code>systemd</code> units (<code>pacemaker.service</code>, <code>corosync.service</code>), completely separate from the Kolla-managed containers. This native <code>pacemaker-execd</code> was holding the same local IPC socket the containerized <code>pacemaker_remote</code> needed, so the container could never bind and stayed in a permanent crash-restart loop. This native cluster also had a <strong>stonith/fencing resource</strong> (<code>fence_compute01</code>) configured and was actively attempting fencing actions due to a no-quorum condition — this should be treated as a serious finding on any host, since fencing can power off machines.</p>
+<p><strong>Fix — full removal:</strong></p>
+<pre><code class="language-bash">systemctl stop pacemaker
+systemctl stop corosync
+systemctl disable pacemaker corosync corosync-qdevice
+
+# confirm nothing left
+ps aux | grep -iE &quot;pacemaker|corosync&quot;
+
+apt-get purge -y pacemaker pacemaker-cli-utils pacemaker-common \
+  pacemaker-resource-agents pcs python3-pacemaker libpacemaker1t64 \
+  corosync corosync-notifyd corosync-qdevice libcorosync-common4
+apt-get autoremove -y
+
+rm -rf /etc/corosync /etc/pacemaker /var/lib/pacemaker /var/lib/corosync
+
+systemctl start kolla-hacluster_pacemaker_remote-container.service
+</code></pre>
+<p><strong>Verification:</strong></p>
+<pre><code class="language-bash">tail -f /var/log/kolla/hacluster/pacemaker-remoted.log
+# expect: &quot;Pacemaker remote executor successfully started and accepting connections&quot;
+</code></pre>
+<p>On controllers, native <code>pacemakerd</code>/<code>corosync</code> processes visible in <code>ps aux</code> are <strong>expected and normal</strong> — they are the containerized processes' host-level process tree (traceable back to <code>docker start -a hacluster_pacemaker</code> / <code>hacluster_corosync</code>). This is different from a genuine separate native install; confirm via <code>dpkg -l | grep -iE "pacemaker|corosync"</code> and check for unexpected stonith resources with <code>pcs stonith status</code> if in doubt.</p>
+<hr>
+<h3 id="problem-4-evacuation-rejected-compute-service-is-still-in-use">Problem 4 — Evacuation rejected: "Compute service ... is still in use"</h3>
+<p><strong>Symptom:</strong> Masakari's recovery workflow ran and reached <code>EvacuateInstancesTask</code>, but failed:</p>
+<pre><code>Instance compute service state on compute-1 expected to be down, but it was up.
+HTTP exception thrown: Compute service of compute-1 is still in use. (HTTP 400)
+</code></pre>
+<p><strong>Root cause:</strong> This happened on test runs where only <code>hacluster_pacemaker_remote</code> (or <code>pacemaker</code>/network) was stopped, while <code>nova_compute</code> kept running and continued sending heartbeats. Pacemaker correctly saw the node as unreachable, but Nova's own service-down detection (independent signal, <code>service_down_time</code>) never tripped, because <code>nova-compute</code> was still alive and reporting in. Masakari's evacuate call requires <strong>both</strong> signals to agree — this is a deliberate Nova safety check preventing evacuation of a host that might still be running the instance (which would risk two VMs writing the same disk).</p>
+<p><strong>This is not a bug</strong> — it's a genuine gap between what was tested (partial failure: only the cluster-membership signal) and what a real host failure looks like (all signals down at once).</p>
+<p><strong>Fix:</strong> none needed in config — the fix is testing correctly (see Section 4). For a valid failure simulation, both <code>pacemaker_remote</code> <strong>and</strong> <code>nova_compute</code> (or the entire host) must go down together.</p>
+<hr>
+<h3 id="problem-5-notification-stuck-permanently-in-running-blocking-future-recovery">Problem 5 — Notification stuck permanently in <code>running</code>, blocking future recovery</h3>
+<p><strong>Symptom:</strong></p>
+<pre><code>openstack segment host update ... --on_maintenance False
+ConflictException: 409 ... Host ... can't be updated as it is in-use to process notifications.
+</code></pre>
+<p><code>openstack notification list</code> showed a <code>COMPUTE_HOST</code> notification stuck at <code>status: running</code> indefinitely.</p>
+<p><strong>Root cause:</strong> <code>masakari_engine</code> restarted mid-workflow (its log showed a multi-hour gap consistent with an unplanned restart). Since Masakari's taskflow-based recovery runs in-process, the restart orphaned the in-flight job — nothing ever marked it <code>finished</code> or <code>error</code>, and the associated host stayed locked in maintenance mode indefinitely.</p>
+<p><strong>Fix:</strong> In this case the notification eventually self-resolved to <code>failed</code> after the engine came back up and re-evaluated it, which unblocked the maintenance-flag update. If it does <strong>not</strong> self-resolve, the notification's <code>status</code> needs to be updated directly in the Masakari database (<code>notifications</code> table) to <code>error</code>, after which the host's <code>on_maintenance</code> flag can be cleared normally via the CLI.</p>
+<p><strong>Verification:</strong></p>
+<pre><code class="language-bash">openstack notification list                          # confirm no notification stuck at &quot;running&quot;
+openstack segment host show HA-Compute-Segment &lt;host&gt; # confirm on_maintenance: False
+</code></pre>
+<p><strong>Operational note:</strong> an unplanned <code>masakari_engine</code> restart during an active recovery is itself worth investigating/monitoring for in production — it silently breaks the recovery workflow for that event.</p>
+<hr>
+<h2 id="4-how-to-test-correctly-full-realistic-failover-test">4. How To Test Correctly (Full, Realistic Failover Test)</h2>
+<h3 id="41-what-not-to-do">4.1 What NOT to do</h3>
+<ul>
+<li><code>docker stop hacluster_pacemaker_remote</code> — the systemd unit (<code>kolla-hacluster_pacemaker_remote-container.service</code>) auto-restarts it within seconds; this doesn't simulate a failure at all.</li>
+<li>Stopping only <code>pacemaker_remote</code> while leaving <code>nova_compute</code> running — Pacemaker will detect the node as down, but Nova won't, and evacuation will be rejected (Problem #4). This tests detection only, not full recovery.</li>
+</ul>
+<h3 id="42-recommended-test-real-host-shutdown">4.2 Recommended test: real host shutdown</h3>
+<p>This exercises every layer of the chain exactly as a genuine failure would.</p>
+<p><strong>Step 1 — Capture baseline (both sides clean):</strong></p>
+<pre><code class="language-bash">docker exec hacluster_pacemaker pcs status
+openstack compute service list --host &lt;compute-x&gt; --long
+openstack server show &lt;test-instance&gt; -c status -c OS-EXT-SRV-ATTR:host
+openstack segment host show HA-Compute-Segment &lt;compute-x&gt;
+</code></pre>
+<p>Expect: <code>RemoteOnline</code>, <code>Status: enabled</code> / <code>State: up</code> / <code>Forced Down: False</code>, instance <code>ACTIVE</code> on the target host, <code>on_maintenance: False</code>.</p>
+<p><strong>Step 2 — Start watchers in separate terminals, leave running:</strong></p>
+<pre><code class="language-bash"># on the deploy host / any client with openstack CLI
+watch -n 10 &quot;date; echo; openstack compute service list --host &lt;compute-x&gt; --long; echo; openstack notification list&quot;
+
+# on a controller
+tail -f /var/log/kolla/masakari/masakari-hostmonitor.log
+
+# on a controller
+watch -n 10 &quot;docker exec hacluster_pacemaker pcs status&quot;
+</code></pre>
+<p><strong>Step 3 — Trigger a real failure:</strong></p>
+<pre><code class="language-bash"># on the target compute node
+shutdown -h now
+</code></pre>
+<p>(A hard power-off/console force-stop from the underlying hypervisor is an even closer simulation of a real crash than a graceful <code>shutdown -h now</code>, since the latter may let some services deregister cleanly.)</p>
+<p><strong>Step 4 — Observe, without touching anything, until it resolves:</strong><br>
+Expected order of events (approximate timings observed in this environment):<br>
+1. ~1–2 min: Pacemaker marks the node <code>RemoteOFFLINE</code>.<br>
+2. Within the next hostmonitor poll cycle (~60s): notification generated (<code>STOPPED</code>/<code>OFFLINE</code>), Nova's <code>State</code> flips to <code>down</code> around the same time.<br>
+3. <code>DisableComputeServiceTask</code> runs, ~180s wait (<code>wait_period_after_service_update</code>).<br>
+4. <code>PrepareHAEnabledInstancesTask</code> — enumerates instances on the failed host.<br>
+5. <code>EvacuateInstancesTask</code> — evacuates each instance; on success the notification status becomes <code>finished</code>.</p>
+<p>Total observed time from real shutdown to instance running again on a healthy host: <strong>~8–9 minutes</strong> in this environment.</p>
+<p><strong>Step 5 — Confirm the result:</strong></p>
+<pre><code class="language-bash">openstack notification show &lt;notification-uuid&gt;       # check recovery_workflow_details, status: finished
+openstack server show &lt;test-instance&gt; -c status -c OS-EXT-SRV-ATTR:host -c OS-EXT-STS:task_state
+</code></pre>
+<p>Success = instance <code>ACTIVE</code>, <code>OS-EXT-SRV-ATTR:host</code> now shows a <strong>different</strong> (healthy) compute host.</p>
+<hr>
+<h2 id="5-cleanup-after-testing">5. Cleanup After Testing</h2>
+<p>Run all of these after every test cycle, real or simulated, to return the environment to a clean baseline.</p>
+<p><strong>1. Power the failed host back on</strong> (out-of-band console/hypervisor access — SSH won't work while it's off).</p>
+<p><strong>2. Confirm its services came back up:</strong></p>
+<pre><code class="language-bash">systemctl status kolla-hacluster_pacemaker_remote-container.service
+systemctl status kolla-nova_compute-container.service
+</code></pre>
+<p><strong>3. Clean up Pacemaker's view of the node:</strong></p>
+<pre><code class="language-bash">docker exec hacluster_pacemaker pcs resource cleanup &lt;compute-x&gt;
+sleep 15
+docker exec hacluster_pacemaker pcs status     # expect RemoteOnline / Started
+</code></pre>
+<p><strong>4. Clear the maintenance flag Masakari sets during recovery:</strong></p>
+<pre><code class="language-bash">openstack segment host show HA-Compute-Segment &lt;compute-x&gt;
+# if on_maintenance: True
+openstack segment host update HA-Compute-Segment &lt;compute-x&gt; --on_maintenance False
+</code></pre>
+<p>If this returns <code>409 ... in-use to process notifications</code>, check for a stuck <code>running</code> notification first (see Problem #5) before retrying.</p>
+<p><strong>5. Re-enable the Nova compute service</strong> (Masakari's <code>DisableComputeServiceTask</code> leaves it administratively disabled):</p>
+<pre><code class="language-bash">openstack compute service list --host &lt;compute-x&gt; --long
+openstack compute service set &lt;compute-x&gt; nova-compute --enable
+</code></pre>
+<p><strong>6. Confirm the evacuated instance (or original instance, if evacuation didn't happen) is healthy:</strong></p>
+<pre><code class="language-bash">openstack server show &lt;test-instance&gt; -c status -c OS-EXT-SRV-ATTR:host -c OS-EXT-STS:task_state
+</code></pre>
+<p><strong>7. Clear any stale Pacemaker failcounts if <code>Failed Resource Actions</code> still shows old entries:</strong></p>
+<pre><code class="language-bash">docker exec hacluster_pacemaker pcs resource cleanup &lt;compute-x&gt;
+</code></pre>
+<hr>
+<h2 id="6-quick-reference-command-cheat-sheet">6. Quick Reference — Command Cheat Sheet</h2>
+<pre><code class="language-bash"># Cluster / Pacemaker
+docker exec hacluster_pacemaker pcs status
+docker exec hacluster_pacemaker pcs resource cleanup &lt;node&gt;
+docker exec hacluster_pacemaker pcs resource config &lt;node&gt;
+docker exec hacluster_pacemaker crm_mon -X
+
+# Masakari
+openstack segment host list HA-Compute-Segment
+openstack segment host show HA-Compute-Segment &lt;host&gt;
+openstack segment host update HA-Compute-Segment &lt;host&gt; --on_maintenance False
+openstack notification list
+openstack notification show &lt;uuid&gt;
+
+# Nova
+openstack compute service list --host &lt;host&gt; --long
+openstack compute service set &lt;host&gt; nova-compute --enable
+openstack server show &lt;instance&gt; -c status -c OS-EXT-SRV-ATTR:host -c OS-EXT-STS:task_state
+
+# Logs
+tail -f /var/log/kolla/masakari/masakari-hostmonitor.log
+tail -f /var/log/kolla/masakari/masakari-engine.log
+tail -f /var/log/kolla/hacluster/pacemaker-remoted.log   # on compute nodes
+</code></pre>
+<hr>
+<h2 id="7-open-items-recommendations">7. Open Items / Recommendations</h2>
+<ul>
+<li><strong>Persist <code>restrict_to_remotes = true</code></strong> via <code>/etc/kolla/config/masakari/masakari-hostmonitor.conf</code> on the deploy host if not already done, then run <code>kolla-ansible reconfigure --tags masakari</code> — otherwise a future <code>kolla-ansible deploy</code> will silently revert this fix.</li>
+<li><strong>Audit all compute nodes</strong> for the rogue native Pacemaker/Corosync issue found on <code>compute-2</code> (Problem #3) — check <code>dpkg -l | grep -iE "pacemaker|corosync"</code> and <code>ps aux | grep -iE "pacemaker|corosync"</code> on every compute node, not just the ones already tested. If found elsewhere, investigate the fencing resource (<code>fence_compute01</code>-style) configuration before removing it, since it may indicate leftover state from an earlier deployment attempt.</li>
+<li><strong>Monitor for unplanned <code>masakari_engine</code> restarts</strong> — these orphan in-flight recovery workflows (Problem #5) and can leave hosts stuck in maintenance mode, silently blocking future auto-recovery until manually cleared.</li>
+<li>Consider whether <code>wait_period_after_service_update</code> (180s default) is acceptable for your RTO requirements, or whether it should be tuned — it's a large fraction of the total ~8–9 minute recovery time observed.</li>
+</ul></div>
+          </article>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>&#169; 2026 Srijan Tangnami Magar</span>
+        <span>
+          <a href="/index.html">Home</a> &middot; <a href="/blogs.html">Blogs</a> &middot;
+          <a href="/index.html#contact">Contact</a> &middot; <a href="#top">Back to top &#8593;</a>
+        </span>
+      </footer>
+    </div>
+
+    <script src="/libs/highlight.min.js"></script>
+    <script src="/libs/copy-buttons.js"></script>
+    <script>
+      document.querySelectorAll('.markdown-content pre code').forEach(function (block) {
+        if (window.hljs) { try { window.hljs.highlightElement(block); } catch (e) {} }
+      });
+    </script>
+  </body>
+</html>

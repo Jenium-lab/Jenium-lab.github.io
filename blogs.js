@@ -124,6 +124,12 @@ async function renderContent(post) {
   return { html: `<p>File type not supported yet.</p>`, raw: '' };
 }
 
+function postHref(name) {
+  const stem = String(name).replace(/\.[^.]+$/, '');
+  const slug = stem.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+  return `blogs/${encodeURIComponent(slug)}/`;
+}
+
 async function renderBlogs() {
   const blogList = document.getElementById('blog-list');
   if (!blogList) return;
@@ -131,7 +137,7 @@ async function renderBlogs() {
     const posts = await loadBlogIndex();
 
     blogList.innerHTML = `<div class="blog-cards">${posts.map((p) => `
-      <a class="blog-card" href="post.html?post=${encodeURIComponent(p.name)}">
+      <a class="blog-card" href="${postHref(p.name)}">
         <h3>${p.title}</h3>
         <p class="meta">${p.category || 'General'} • ${p.date || ''}</p>
       </a>`).join('')}</div>`;

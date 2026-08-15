@@ -11,17 +11,20 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://srijantangnamimagar.com.np/post.html?post=masakari-ha-runbook.md</loc>
+    <loc>https://srijantangnamimagar.com.np/blogs/masakari-ha-runbook/</loc>
+    <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://srijantangnamimagar.com.np/post.html?post=octavia-lbaas-guide.md</loc>
+    <loc>https://srijantangnamimagar.com.np/blogs/octavia-lbaas-guide/</loc>
+    <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://srijantangnamimagar.com.np/post.html?post=openstack-ceph-complete-setup.md</loc>
+    <loc>https://srijantangnamimagar.com.np/blogs/openstack-ceph-complete-setup/</loc>
+    <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

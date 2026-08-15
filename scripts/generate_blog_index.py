@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 import json
 import re
+import sys
 from datetime import date
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from blog_util import excerpt_from_markdown  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 BLOGS_DIR = ROOT / "blogs"
@@ -44,6 +48,13 @@ def main():
                     "date": today,
                 }
             )
+
+    for post in posts:
+        md_path = BLOGS_DIR / post["name"]
+        if md_path.exists():
+            excerpt = excerpt_from_markdown(md_path.read_text(encoding="utf-8"))
+            if excerpt:
+                post["excerpt"] = excerpt
 
     INDEX_FILE.write_text(json.dumps(posts, indent=2) + "\n", encoding="utf-8")
     print(f"Generated {len(posts)} posts in {INDEX_FILE}")

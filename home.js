@@ -36,7 +36,8 @@
               when = months[Number(parts[1]) - 1] + ' ' + parts[2];
             }
           }
-          return '<a class="blog-preview-item" href="post.html?post=' + encodeURIComponent(p.name) + '">' +
+          var slug = String(p.name).replace(/\.[^.]+$/, '').toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+          return '<a class="blog-preview-item" href="blogs/' + encodeURIComponent(slug) + '/">' +
             '<span class="bpi-title">' + p.title + '</span>' +
             '<span class="bpi-meta">' + (p.category || 'General') + (when ? ' · ' + when : '') + '</span>' +
             '<span class="bpi-arrow">→</span>' +

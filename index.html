@@ -3,181 +3,224 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Srijan Tangnami Magar | Infrastructure Engineer</title>
-    <meta name="description" content="Portfolio for Srijan Tangnami Magar, an infrastructure engineer focused on cloud, networking, automation, and resilient systems." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>srijan@infra:~$ — Infrastructure Engineer</title>
+    <meta name="description" content="Srijan Tangnami Magar — infrastructure engineer focused on OpenStack, private cloud, networking, automation, and resilient systems." />
     <link rel="icon" type="image/svg+xml" href="gemini-svg.svg" />
     <link rel="stylesheet" href="styles.css" />
+    <script>document.documentElement.classList.add('js');</script>
   </head>
   <body>
-    <div class="page-shell">
-      <header class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">IT Professional • Networking • DevOps</p>
-          <h1>Srijan Tangnami Magar</h1>
-          <p class="lead">
-            Infrastructure Engineer with hands-on experience in private cloud, virtualization, networking, security, and automation.
-          </p>
-          <div class="actions">
-            <a class="btn primary" href="#experience">View experience</a>
-            <a class="btn secondary" href="blogs.html">Read blogs</a>
-            <a class="btn secondary" href="#contact">Get in touch</a>
+    <div class="shell">
+
+      <div class="statusbar" role="banner">
+        <span class="host"><b>srijan</b><i>@</i><b>infra</b><i>:</i> <span class="path">~</span></span>
+        <span class="center">/dev/console · uptime: <span data-metric="uptime">0h 00m 00s</span></span>
+        <span class="right">
+          <span><span class="led ok"></span>ONLINE</span>
+          <span class="clock" data-clock="utc">00:00:00 UTC</span>
+        </span>
+      </div>
+
+      <!-- ================= HERO : boot sequence ================= -->
+      <section class="hero-grid">
+        <div class="window">
+          <div class="win-title">
+            <span class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></span>
+            <span class="tpath"><b>srijan</b>@infra: ~/console</span>
+            <span class="tstatus">pts/0</span>
+          </div>
+          <div class="win-body">
+            <div id="boot" class="term">
+              <p class="prompt out type">whoami</p>
+              <p class="out type" data-speed="40">srijan.tangnami.magar</p>
+              <p class="prompt out type">cat role.txt</p>
+              <p class="out type" data-speed="40"><b>Infrastructure Engineer</b> — cloud · networking · automation</p>
+              <p class="prompt out type">systemctl status focus --oneline</p>
+              <p class="out type" data-speed="30">● openstack.service  <span class="okk">running</span>  private cloud, Proxmox, resilient operations</p>
+              <p class="prompt out type">ls ./now</p>
+              <p class="out dim type" data-speed="50">docs/   runbooks/   homelab/   monitoring/</p>
+              <p class="prompt out type">curl -s srijan.dev | jq .status</p>
+              <p class="out okk type" data-speed="70">"available for work"</p>
+              <p class="prompt type cursor"></p>
+            </div>
           </div>
         </div>
-        <div class="hero-panel" aria-hidden="true">
-          <div class="panel-grid"></div>
-          <div class="panel-card">
-            <span>Current focus</span>
-            <strong>OpenStack</strong>
-            <small>Private cloud, Proxmox, automation, and resilient operations</small>
+
+        <div class="window">
+          <div class="win-title">
+            <span class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></span>
+            <span class="tpath"><b>net</b>: topology</span>
+            <span class="tstatus">LIVE</span>
+          </div>
+          <div class="win-body">
+            <div class="topology">
+<pre>
+          <span class="node">[ controller-1 ]</span>
+                 │
+        <span class="node">[ controller-2 ]</span>──<span class="node">[ controller-3 ]</span>
+                 │   pacemaker
+        ┌────────┼─────────┐
+ <span class="node">[ compute-1 ]</span>      <span class="node">[ compute-2 ]</span>
+      │  masakari      │
+     vms            vms
+      └──────┬────────┘
+     <span class="tag">zabbix · grafana ·</span>
+     <span class="tag">prometheus</span>
+</pre>
+              <p class="muted" style="font-size:12px;">
+                <span class="node blink">●</span> HA segment: auto-recovery active
+              </p>
+            </div>
           </div>
         </div>
-      </header>
+      </section>
 
-      <main>
-        <section class="section intro">
-          <div>
-            <p class="section-label">Objective</p>
-            <h2>Building reliable systems for modern infrastructure teams.</h2>
-          </div>
-          <p>
-            Dedicated IT professional with a strong foundation in networking, system administration, and DevOps. Passionate about leveraging technical expertise in network infrastructure, security, automation, and hardware management to deliver dependable solutions.
+      <div class="cmds" style="margin: 22px 0 40px;">
+        <a class="cmd primary" href="blogs.html">read logs ›</a>
+        <a class="cmd amber" href="#contact">contact</a>
+        <a class="cmd" href="#experience">experience</a>
+      </div>
+
+      <!-- ================= OBJECTIVE ================= -->
+      <section class="screen">
+        <div class="sc-title"><span class="marker">●</span><span class="file">objective.txt</span></div>
+        <div class="sc-body">
+          <p class="section-label">Objective</p>
+          <h2>Building reliable systems for modern infrastructure teams.</h2>
+          <p class="muted">
+            Dedicated IT professional with a strong foundation in networking, system administration, and DevOps.
+            Passionate about leveraging technical expertise in network infrastructure, security, automation,
+            and hardware management to deliver dependable solutions.
           </p>
-        </section>
+        </div>
+      </section>
 
-        <section class="section cards">
-          <article>
-            <h3>Cloud & Virtualization</h3>
-            <p>OpenStack, Kolla-Ansible, Proxmox VE, Docker, and hybrid infrastructure operations.</p>
-          </article>
-          <article>
-            <h3>Networking & Security</h3>
-            <p>FortiGate, Juniper, Cisco/Huawei switches, VLANs, ACLs, NAT, IPsec, and secure segmentation.</p>
-          </article>
-          <article>
-            <h3>Monitoring & Automation</h3>
-            <p>Zabbix, Grafana, Prometheus, Ansible, CI/CD, and backup/recovery workflows.</p>
-          </article>
-        </section>
-
-        <section id="experience" class="section projects">
-          <div class="section-heading">
-            <p class="section-label">Experience</p>
-            <h2>Professional growth in infrastructure operations.</h2>
-          </div>
-          <div class="project-list">
-            <article class="project-card">
-              <h3>Infrastructure Engineer</h3>
-              <p class="meta">Startsmall Pvt. Ltd. • Apr 2025 – Present</p>
-              <ul>
-                <li>Deploy and manage private cloud infrastructure using OpenStack and Kolla-Ansible.</li>
-                <li>Administer Proxmox VE clusters for virtualization, snapshots, and high-availability setup.</li>
-                <li>Build Docker-based environments and automate deployment tasks with Ansible.</li>
+      <!-- ================= EXPERIENCE ================= -->
+      <section id="experience" class="screen">
+        <div class="sc-title"><span class="marker">●</span><span class="file">experience.log</span></div>
+        <div class="sc-body">
+          <p class="section-label">Experience — tail -f</p>
+          <ul class="log">
+            <li>
+              <span class="stamp">[2025-04 → now] <span class="lvl">RUNNING</span></span><br />
+              <span class="title">Infrastructure Engineer</span> <span class="where"><span class="at">@</span> Startsmall Pvt. Ltd.</span>
+              <ul class="tree">
+                <li><b>Deploy &amp; manage</b> private cloud with OpenStack and Kolla-Ansible.</li>
+                <li><b>Administer</b> Proxmox VE clusters — virtualization, snapshots, high availability.</li>
+                <li><b>Build</b> Docker environments; automate deployments with Ansible.</li>
               </ul>
-            </article>
-            <article class="project-card">
-              <h3>Junior System & Network Administrator</h3>
-              <p class="meta">Datahub Pvt. Ltd. • Jan 2024 – Mar 2025</p>
-              <ul>
-                <li>Handled daily network troubleshooting and maintained FortiGate, Juniper, and Cambium infrastructure.</li>
-                <li>Managed Apache CloudStack private cloud resources and backup processes with Commvault.</li>
-                <li>Monitored systems with Zabbix, Grafana, Prometheus, Telegraf, and InfluxDB.</li>
+            </li>
+            <li>
+              <span class="stamp">[2024-01 → 2025-03] <span class="lvl ok">CLEAN_EXIT</span></span><br />
+              <span class="title">Junior System &amp; Network Administrator</span> <span class="where"><span class="at">@</span> Datahub Pvt. Ltd.</span>
+              <ul class="tree">
+                <li><b>Handled</b> network troubleshooting; maintained FortiGate, Juniper, and Cambium infrastructure.</li>
+                <li><b>Managed</b> Apache CloudStack private cloud and Commvault backups.</li>
+                <li><b>Monitored</b> with Zabbix, Grafana, Prometheus, Telegraf, InfluxDB.</li>
               </ul>
-            </article>
-            <article class="project-card">
-              <h3>System & Network Administrator Intern</h3>
-              <p class="meta">LIS Nepal Pvt. Ltd. • Sep 2024 – Nov 2024</p>
-              <ul>
-                <li>Managed Cisco/Huawei switches, Sophos firewalls, and load balancers.</li>
-                <li>Automated backup processes using Veeam and improved network reliability practices.</li>
-                <li>Implemented VLANs, ACLs, and NAT for secure traffic flow.</li>
+            </li>
+            <li>
+              <span class="stamp">[2024-09 → 2024-11] <span class="lvl warn">INTERNSHIP</span></span><br />
+              <span class="title">System &amp; Network Administrator Intern</span> <span class="where"><span class="at">@</span> LIS Nepal Pvt. Ltd.</span>
+              <ul class="tree">
+                <li><b>Managed</b> Cisco/Huawei switches, Sophos firewalls, load balancers.</li>
+                <li><b>Automated</b> backups with Veeam; hardened network reliability practices.</li>
+                <li><b>Implemented</b> VLANs, ACLs, and NAT for secure traffic flow.</li>
               </ul>
-            </article>
-          </div>
-        </section>
+            </li>
+          </ul>
+        </div>
+      </section>
 
-        <section class="section">
-          <div class="section-heading">
-            <p class="section-label">Skills</p>
-            <h2>Core strengths across systems, networking, and cloud.</h2>
+      <!-- ================= SKILLS ================= -->
+      <section class="screen">
+        <div class="sc-title"><span class="marker">●</span><span class="file">skills.conf</span></div>
+        <div class="sc-body">
+          <p class="section-label">Core stack — apt list --installed</p>
+          <div class="chips">
+            <span class="chip core">openstack</span><span class="chip core">proxmox</span>
+            <span class="chip core">docker</span><span class="chip core">kolla-ansible</span>
+            <span class="chip core">ansible</span>
           </div>
-          <div class="skills-grid">
-            <article class="project-card">
-              <h3>Core stack</h3>
-              <div class="pill-row">
-                <span class="pill">OpenStack</span>
-                <span class="pill">Proxmox</span>
-                <span class="pill">Docker</span>
-                <span class="pill">Kolla-Ansible</span>
-                <span class="pill">Ansible</span>
-              </div>
-            </article>
-            <article class="project-card">
-              <h3>Networking & monitoring</h3>
-              <div class="pill-row">
-                <span class="pill">Cisco</span>
-                <span class="pill">Huawei</span>
-                <span class="pill">FortiGate</span>
-                <span class="pill">Juniper</span>
-                <span class="pill">Zabbix</span>
-                <span class="pill">Grafana</span>
-                <span class="pill">Prometheus</span>
-              </div>
-            </article>
+          <p class="section-label" style="margin-top:20px;">Networking &amp; monitoring</p>
+          <div class="chips">
+            <span class="chip">cisco</span><span class="chip">huawei</span>
+            <span class="chip">fortigate</span><span class="chip">juniper</span>
+            <span class="chip">zabbix</span><span class="chip">grafana</span>
+            <span class="chip">prometheus</span>
           </div>
-        </section>
 
-        <section class="section projects">
-          <div class="section-heading">
-            <p class="section-label">Projects & Education</p>
-            <h2>Hands-on delivery with academic grounding.</h2>
+          <div class="metrics">
+            <div class="metric"><div class="k">uptime</div><div class="v" data-metric="uptime">0h 00m 00s</div></div>
+            <div class="metric"><div class="k">load avg</div><div class="v"><span data-metric="load1">0.42</span> <span data-metric="load5">0.33</span> <span data-metric="load15">0.29</span></div></div>
+            <div class="metric"><div class="k">rx / tx</div><div class="v"><span data-metric="rx">1.2</span> / <span data-metric="tx">0.9</span></div></div>
+            <div class="metric"><div class="k">services</div><div class="v ok">47/51 <span style="font-size:12px;color:var(--dim)">active</span></div></div>
           </div>
-          <div class="project-list">
-            <article class="project-card">
-              <h3>Key projects</h3>
-              <ul>
-                <li>Multi-node OpenStack deployment with high-availability monitoring.</li>
-                <li>Network security implementation using Sophos and FortiGate with granular ACLs.</li>
-                <li>Centralized monitoring deployment for 50+ infrastructure nodes with Zabbix and Grafana.</li>
+        </div>
+      </section>
+
+      <!-- ================= PROJECTS + EDUCATION ================= -->
+      <section class="screen">
+        <div class="sc-title"><span class="marker">●</span><span class="file">~/projects + ~/education</span></div>
+        <div class="sc-body">
+          <div class="hero-grid" style="grid-template-columns: 1fr 1fr; gap: 28px;">
+            <div>
+              <p class="section-label">Key projects</p>
+              <ul class="tree">
+                <li><b>openstack-ha-cloud</b> — multi-node deployment with high-availability monitoring.</li>
+                <li><b>security-segmentation</b> — Sophos + FortiGate with granular ACLs.</li>
+                <li><b>zabbix-grafana-stack</b> — centralized monitoring for 50+ nodes.</li>
               </ul>
-            </article>
-            <article class="project-card">
-              <h3>Education</h3>
-              <ul>
-                <li>MSc in Information Technology (1st Sem) – Amrit Science Campus, Kathmandu</li>
-                <li>BSc in Information Technology – Amrit Science Campus, Kathmandu</li>
-                <li>+2 Management – Shree Bajra Barahi Higher Secondary School</li>
+            </div>
+            <div>
+              <p class="section-label">Education</p>
+              <ul class="tree">
+                <li><b>MSc in IT</b> (1st sem) — Amrit Science Campus, Kathmandu</li>
+                <li><b>BSc in IT</b> — Amrit Science Campus, Kathmandu</li>
+                <li><b>+2 Management</b> — Shree Bajra Barahi Higher Secondary School</li>
               </ul>
-            </article>
+            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section id="contact" class="section contact">
-          <div class="section-heading">
-            <p class="section-label">Contact</p>
-            <h2>Let’s connect.</h2>
+      <!-- ================= CONTACT ================= -->
+      <section id="contact" class="screen">
+        <div class="sc-title"><span class="marker">●</span><span class="file">whois srijan</span></div>
+        <div class="sc-body">
+          <p class="section-label">Contact</p>
+          <div class="whois">
+            <div class="row"><span class="k">email</span><span class="v"><a href="mailto:tsijan89@gmail.com">tsijan89@gmail.com</a></span></div>
+            <div class="row"><span class="k">phone</span><span class="v"><a href="tel:+9779860806556">+977 9860806556</a></span></div>
+            <div class="row"><span class="k">location</span><span class="v">Chapagaun-11, Lalitpur</span></div>
+            <div class="row"><span class="k">github</span><span class="v"><a href="https://github.com/Jenium-lab" target="_blank" rel="noreferrer">github.com/Jenium-lab</a></span></div>
+            <div class="row"><span class="k">linkedin</span><span class="v"><a href="https://www.linkedin.com/in/srijan-t-magar" target="_blank" rel="noreferrer">linkedin.com/in/srijan-t-magar</a></span></div>
           </div>
-          <div class="contact-list">
-            <a href="mailto:tsijan89@gmail.com">Email: tsijan89@gmail.com</a>
-            <a href="tel:+9779860806556">Phone: +977 9860806556</a>
-            <span>Location: Chapagaun-11, Lalitpur</span>
-            <a href="https://www.linkedin.com/in/srijan-t-magar" target="_blank" rel="noreferrer">LinkedIn: linkedin.com/in/srijan-t-magar</a>
-            <a href="https://github.com/Jenium-lab" target="_blank" rel="noreferrer">GitHub: github.com/Jenium-lab</a>
-          </div>
-        </section>
+        </div>
+      </section>
 
-        <section class="section projects">
-          <div class="section-heading">
-            <p class="section-label">Blogs</p>
-            <h2>Read my posts on cloud, networking, and automation.</h2>
+      <!-- ================= BLOG CTA ================= -->
+      <section class="screen">
+        <div class="sc-title"><span class="marker">●</span><span class="file">ls ~/blogs</span></div>
+        <div class="sc-body">
+          <p class="section-label">Blogs</p>
+          <h2>Runbooks, notes &amp; field reports from the infrastructure front line.</h2>
+          <p class="muted">Long-form posts on OpenStack, Masakari HA, automation, and the messy reality of keeping systems alive.</p>
+          <div class="cmds">
+            <a class="cmd primary" href="blogs.html">open blog archive ›</a>
           </div>
-          <div class="actions">
-            <a class="btn primary" href="blogs.html">View all blog posts</a>
-          </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      <footer>
+        <div class="eof">
+          <span>-- EOF --</span>
+          <span><span class="led ok"></span> all systems nominal</span>
+        </div>
+      </footer>
+
     </div>
+
+    <script src="console.js"></script>
   </body>
 </html>

@@ -3,40 +3,67 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Blog Post | Srijan Tangnami Magar</title>
+    <title>cat post — Srijan Tangnami Magar</title>
     <meta name="description" content="Blog post by Srijan Tangnami Magar, infrastructure engineer." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/svg+xml" href="gemini-svg.svg" />
     <link rel="stylesheet" href="styles.css" />
+    <script>document.documentElement.classList.add('js');</script>
   </head>
   <body>
-    <div class="page-shell">
-      <header class="hero short-hero">
-        <div class="hero-copy">
-          <p class="eyebrow">Blog Post</p>
-          <h1 id="post-title">Loading…</h1>
-          <p class="meta" id="post-meta"></p>
-          <div class="actions">
-            <a class="btn primary" href="./blogs.html">← Back to blog list</a>
-            <a class="btn secondary" href="./index.html">Home</a>
+    <div class="shell">
+
+      <div class="statusbar" role="banner">
+        <span class="host"><b>srijan</b><i>@</i><b>infra</b><i>:</i> <span class="path">~/blogs</span></span>
+        <span class="center">/dev/console · <span data-metric="uptime">0h 00m 00s</span></span>
+        <span class="right">
+          <span><span class="led ok"></span>ONLINE</span>
+          <span class="clock" data-clock="utc">00:00:00 UTC</span>
+        </span>
+      </div>
+
+      <div class="window post-hero">
+        <div class="win-title">
+          <span class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></span>
+          <span class="tpath"><b>srijan</b>@infra: ~/blogs</span>
+          <span class="tstatus">cat(1)</span>
+        </div>
+        <div class="win-body">
+          <div class="term">
+            <p class="prompt out">cat <span class="file-ref" id="post-file">./blogs/post</span></p>
+            <p class="section-label" style="margin-top:14px;">Reading document</p>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main>
-        <section class="section projects">
-          <article class="project-card">
-            <div id="post-toc" class="post-toc"></div>
-            <div id="post-content" class="content markdown-content"></div>
-          </article>
-        </section>
-      </main>
+      <div class="cmds" style="margin: 20px 0 30px;">
+        <a class="cmd primary" href="blogs.html">‹ ls ~/blogs</a>
+        <a class="cmd" href="index.html">cd ~</a>
+      </div>
+
+      <article class="screen">
+        <div class="sc-title">
+          <span class="marker">●</span>
+          <span class="file" id="post-title">Loading…</span>
+          <span class="tstatus" style="margin-left:auto;" id="post-meta"></span>
+        </div>
+        <div class="sc-body">
+          <div id="post-toc" class="post-toc"></div>
+          <div id="post-content" class="content markdown-content"></div>
+        </div>
+      </article>
+
+      <footer>
+        <div class="eof">
+          <span>-- EOF --</span>
+          <span><span class="led ok"></span> document rendered</span>
+        </div>
+      </footer>
+
     </div>
 
     <script src="libs/marked.min.js"></script>
     <script src="libs/purify.min.js"></script>
+    <script src="console.js"></script>
     <script src="blogs.js"></script>
     <script src="post.js"></script>
   </body>

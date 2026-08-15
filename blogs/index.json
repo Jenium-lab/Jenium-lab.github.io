@@ -28,5 +28,11 @@
     "title": "Architecture brief document",
     "category": "Document",
     "date": "2026-07-21"
+  },
+  {
+    "name": "masakari-ha-runbook.md",
+    "title": "Masakari ha runbook",
+    "category": "General",
+    "date": "2026-08-15"
   }
 ]

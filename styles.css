@@ -207,6 +207,9 @@ h1 {
 .markdown-content pre:hover .copy-btn,
 .copy-btn:focus { opacity: 1; }
 .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+@media (pointer: coarse) {
+  .copy-btn { opacity: 1; }
+}
 
 /* highlight.js — dark theme tuned to site palette */
 .markdown-content .hljs {

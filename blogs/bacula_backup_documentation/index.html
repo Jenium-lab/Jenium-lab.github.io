@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bacula Backup Documentation | Srijan Tangnami Magar</title>
+    <meta name="description" content="Director • Storage Daemon • File Daemon • Multi-Client" />
+    <link rel="canonical" href="https://srijantangnamimagar.com.np/blogs/bacula_backup_documentation/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Srijan Tangnami Magar" />
+    <meta property="og:title" content="Bacula Backup Documentation | Srijan Tangnami Magar" />
+    <meta property="og:description" content="Director • Storage Daemon • File Daemon • Multi-Client" />
+    <meta property="og:url" content="https://srijantangnamimagar.com.np/blogs/bacula_backup_documentation/" />
+    <meta property="og:image" content="https://srijantangnamimagar.com.np/gemini-svg.svg" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Bacula Backup Documentation | Srijan Tangnami Magar" />
+    <meta name="twitter:description" content="Director • Storage Daemon • File Daemon • Multi-Client" />
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Bacula Backup Documentation",
+  "description": "Director \u2022 Storage Daemon \u2022 File Daemon \u2022 Multi-Client",
+  "image": "https://srijantangnamimagar.com.np/gemini-svg.svg",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://srijantangnamimagar.com.np/blogs/bacula_backup_documentation/"
+  },
+  "datePublished": "2026-08-27",
+  "dateModified": "2026-08-27",
+  "author": {
+    "@type": "Person",
+    "name": "Srijan Tangnami Magar",
+    "url": "https://srijantangnamimagar.com.np"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Srijan Tangnami Magar",
+    "url": "https://srijantangnamimagar.com.np"
+  }
+}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/gemini-svg.svg" />
+    <script src="/theme.js"></script>
+    <link rel="stylesheet" href="/styles.css?v=10" />
+    <script>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <div id="top" class="page-shell">
+
+      <nav class="nav" role="navigation">
+        <a class="brand" href="/index.html">
+          <span class="brand-mark">ST</span>
+          <span class="brand-name">Srijan&nbsp;<em>T.&nbsp;Magar</em></span>
+        </a>
+        <div class="nav-links">
+          <a href="/index.html#experience">Experience</a>
+          <a href="/index.html#skills">Skills</a>
+          <a href="/index.html#blogs">Blogs</a>
+          <a href="/index.html#contact">Contact</a>
+          <a class="nav-cta" href="/blogs.html">Blog archive&nbsp;&#x2197;</a>
+          <button class="theme-toggle" type="button" aria-label="Toggle light or dark theme">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+          </button>
+        </div>
+      </nav>
+
+      <header class="hero short-hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Blog Post</p>
+          <h1>Bacula Backup Documentation</h1>
+          <p class="meta">General &bull; 2026-08-27</p>
+          <div class="actions">
+            <a class="btn primary" href="/blogs.html">&#8592; Back to blog list</a>
+            <a class="btn secondary" href="/index.html">Home</a>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="section projects">
+          <article class="reader">
+            <nav class="post-toc"><strong>On this page</strong><ul><li style="margin-left:10px"><a href="#openstack-vm-file-level-backup">OpenStack VM File-Level Backup</a></li><li style="margin-left:0px"><a href="#1-architecture-overview">1. Architecture Overview</a></li><li style="margin-left:0px"><a href="#2-critical-config-values-what-must-match">2. Critical Config Values — What Must Match</a></li><li style="margin-left:0px"><a href="#3-complete-configuration-files">3. Complete Configuration Files</a></li><li style="margin-left:0px"><a href="#4-name-password-cross-reference">4. Name &amp; Password Cross-Reference</a></li><li style="margin-left:0px"><a href="#5-installation-steps">5. Installation Steps</a></li><li style="margin-left:0px"><a href="#6-recommended-config-directory-layout">6. Recommended Config Directory Layout</a></li><li style="margin-left:0px"><a href="#7-verification-bconsole-commands">7. Verification &amp; bconsole Commands</a></li><li style="margin-left:0px"><a href="#8-troubleshooting">8. Troubleshooting</a></li><li style="margin-left:0px"><a href="#9-setup-checklist">9. Setup Checklist</a></li></ul></nav>
+            <div class="content markdown-content"><h3 id="openstack-vm-file-level-backup">OpenStack VM File-Level Backup</h3>
+<p><strong>Director • Storage Daemon • File Daemon • Multi-Client</strong></p>
+<hr>
+<h2 id="1-architecture-overview">1. Architecture Overview</h2>
+<p>Bacula is a network backup solution with three core daemons that communicate over TCP/IP. Each daemon has its own configuration file and must authenticate to the others using shared passwords.</p>
+<table>
+<thead>
+<tr>
+<th>Daemon</th>
+<th>Service Name</th>
+<th>Default Port</th>
+<th>Config File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Director (DIR)</td>
+<td>bacula-director</td>
+<td>9101</td>
+<td>/etc/bacula/bacula-dir.conf</td>
+</tr>
+<tr>
+<td>Storage Daemon (SD)</td>
+<td>bacula-sd</td>
+<td>9103</td>
+<td>/etc/bacula/bacula-sd.conf</td>
+</tr>
+<tr>
+<td>File Daemon (FD)</td>
+<td>bacula-fd</td>
+<td>9102</td>
+<td>/etc/bacula/bacula-fd.conf</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>INFO:</strong> The Director is the brain — it orchestrates all jobs. The Storage Daemon writes data to disk/tape. The File Daemon runs on each client VM and sends data to the Storage Daemon.</p>
+</blockquote>
+<h3 id="communication-flow">Communication Flow</h3>
+<pre><code>  OpenStack VM (FD)          Bacula Server
+  ┌──────────────────┐       ┌─────────────────────────────┐
+  │  bacula-fd       │◄─────►│  bacula-dir  (port 9101)    │
+  │  port 9102       │       │  bacula-sd   (port 9103)    │
+  └──────────────────┘       └─────────────────────────────┘
+                                        │
+                               /bacula/backup/ (Storage)
+</code></pre>
+<hr>
+<h2 id="2-critical-config-values-what-must-match">2. Critical Config Values — What Must Match</h2>
+<blockquote>
+<p><strong>WARNING:</strong> Every password and name listed below must be copied exactly — they are case-sensitive.</p>
+</blockquote>
+<h3 id="21-director-file-daemon-client">2.1 Director ↔ File Daemon (Client)</h3>
+<p>When the Director connects to a client VM's File Daemon, it authenticates using the client's password. This password must appear in two places:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>bacula-fd.conf (on each VM)</th>
+<th>bacula-dir.conf (on server)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Director Name</td>
+<td><code>Name = "bacula-dir"</code></td>
+<td><code>Director { Name = "bacula-dir" }</code></td>
+</tr>
+<tr>
+<td>Client Password</td>
+<td><code>Password = "SecretVM1Pass!"</code></td>
+<td><code>Client { Password = "SecretVM1Pass!" }</code></td>
+</tr>
+<tr>
+<td>FD Name</td>
+<td><code>FileDaemon { Name = "vm1-fd" }</code></td>
+<td><code>Client { Name = "vm1-fd" }</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>WARNING:</strong> The Director Name in bacula-fd.conf must match the actual Director resource name in bacula-dir.conf exactly.</p>
+</blockquote>
+<h3 id="22-director-storage-daemon">2.2 Director ↔ Storage Daemon</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>bacula-sd.conf (on server)</th>
+<th>bacula-dir.conf (on server)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SD Name</td>
+<td><code>Storage { Name = "bacula-sd" }</code></td>
+<td><code>Storage { SDAddress = ... }</code></td>
+</tr>
+<tr>
+<td>SD Password</td>
+<td><code>Director { Password = "SDPass123!" }</code></td>
+<td><code>Storage { Password = "SDPass123!" }</code></td>
+</tr>
+<tr>
+<td>Director Name</td>
+<td><code>Director { Name = "bacula-dir" }</code></td>
+<td><code>Director { Name = "bacula-dir" }</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-console-director">2.3 Console ↔ Director</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>bconsole.conf</th>
+<th>bacula-dir.conf</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Director Address</td>
+<td><code>DIRaddress = &lt;server-ip&gt;</code></td>
+<td><code>Director { DirAddress = &lt;server-ip&gt; }</code></td>
+</tr>
+<tr>
+<td>Director Name</td>
+<td><code>Director { Name = "bacula-dir" }</code></td>
+<td><code>Director { Name = "bacula-dir" }</code></td>
+</tr>
+<tr>
+<td>Console Password</td>
+<td><code>Director { Password = "ConsPass!" }</code></td>
+<td><code>Console { Password = "ConsPass!" }</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-complete-configuration-files">3. Complete Configuration Files</h2>
+<h3 id="31-bacula-dirconf-bacula-server">3.1 bacula-dir.conf (Bacula Server)</h3>
+<p>This is the master configuration file on the Bacula server. It defines every client, job, schedule, fileset, storage, and pool.</p>
+<h4 id="director-resource">Director Resource</h4>
+<pre><code class="language-ini">Director {
+  Name = &quot;bacula-dir&quot;          # ← Must match Director Name in all FDs and SD
+  DIRport = 9101
+  QueryFile = &quot;/etc/bacula/query.sql&quot;
+  WorkingDirectory = &quot;/var/lib/bacula&quot;
+  PidDirectory = &quot;/run/bacula&quot;
+  Maximum Concurrent Jobs = 20
+  Password = &quot;ConsolePassword123!&quot;  # ← Must match bconsole.conf
+  Messages = Daemon
+}
+</code></pre>
+<h4 id="storage-resource">Storage Resource</h4>
+<pre><code class="language-ini">Storage {
+  Name = &quot;File1&quot;
+  Address = 127.0.0.1          # Storage Daemon address
+  SDPort = 9103
+  Password = &quot;SDPassword123!&quot;  # ← Must match SD Director block password
+  Device = &quot;FileStorage&quot;       # ← Must match Device Name in bacula-sd.conf
+  Media Type = &quot;File&quot;
+}
+</code></pre>
+<h4 id="client-resources-one-per-vm">Client Resources (one per VM)</h4>
+<pre><code class="language-ini">Client {
+  Name = &quot;vm1-fd&quot;              # ← Must match FileDaemon Name in vm1 bacula-fd.conf
+  Address = 192.168.1.101      # OpenStack VM IP
+  FDPort = 9102
+  Catalog = &quot;MyCatalog&quot;
+  Password = &quot;VM1Password!&quot;    # ← Must match Director Password in vm1 bacula-fd.conf
+  File Retention = 30 days
+  Job Retention = 6 months
+  AutoPrune = yes
+}
+
+Client {
+  Name = &quot;vm2-fd&quot;
+  Address = 192.168.1.102
+  FDPort = 9102
+  Catalog = &quot;MyCatalog&quot;
+  Password = &quot;VM2Password!&quot;    # ← Different password per VM (recommended)
+  File Retention = 30 days
+  Job Retention = 6 months
+  AutoPrune = yes
+}
+</code></pre>
+<h4 id="fileset-resource-shared-across-jobs">FileSet Resource (shared across jobs)</h4>
+<pre><code class="language-ini">FileSet {
+  Name = &quot;Linux-Common-FileSet&quot;
+  Include {
+    Options {
+      signature = MD5
+      Compression = GZIP
+    }
+    File = /etc
+    File = /home
+    File = /opt
+    File = /var/www
+  }
+  Exclude {
+    File = /proc
+    File = /sys
+    File = /tmp
+    File = /dev
+    File = /run
+  }
+}
+</code></pre>
+<h4 id="schedule-resource-shared-across-jobs">Schedule Resource (shared across jobs)</h4>
+<pre><code class="language-ini">Schedule {
+  Name = &quot;VM-Daily-Schedule&quot;
+  Run = Full        1st sun at 02:00
+  Run = Differential 2nd-5th sun at 02:00
+  Run = Incremental  mon-sat at 02:00
+}
+</code></pre>
+<h4 id="job-resources">Job Resources</h4>
+<pre><code class="language-ini">Job {
+  Name = &quot;Backup-VM1&quot;
+  Type = Backup
+  Level = Incremental
+  Client = &quot;vm1-fd&quot;
+  FileSet = &quot;Linux-Common-FileSet&quot;
+  Schedule = &quot;VM-Daily-Schedule&quot;
+  Storage = &quot;File1&quot;
+  Messages = Standard
+  Pool = &quot;File&quot;
+  Priority = 10
+  Write Bootstrap = &quot;/var/lib/bacula/vm1.bsr&quot;
+}
+
+Job {
+  Name = &quot;Backup-VM2&quot;
+  Type = Backup
+  Level = Incremental
+  Client = &quot;vm2-fd&quot;
+  FileSet = &quot;Linux-Common-FileSet&quot;
+  Schedule = &quot;VM-Daily-Schedule&quot;
+  Storage = &quot;File1&quot;
+  Messages = Standard
+  Pool = &quot;File&quot;
+  Priority = 10
+  Write Bootstrap = &quot;/var/lib/bacula/vm2.bsr&quot;
+}
+
+# One restore job covers ALL clients — select at runtime
+Job {
+  Name = &quot;Restore-Any-VM&quot;
+  Type = Restore
+  Client = &quot;vm1-fd&quot;            # Default; override with: restore client=vm2-fd
+  FileSet = &quot;Linux-Common-FileSet&quot;
+  Storage = &quot;File1&quot;
+  Pool = &quot;File&quot;
+  Messages = Standard
+  Where = /tmp/bacula-restore
+}
+</code></pre>
+<hr>
+<h3 id="32-bacula-sdconf-bacula-server">3.2 bacula-sd.conf (Bacula Server)</h3>
+<p>The Storage Daemon configuration. Defines where backup data is physically stored and which Directors are allowed to connect.</p>
+<pre><code class="language-ini">Storage {
+  Name = &quot;bacula-sd&quot;
+  SDPort = 9103
+  WorkingDirectory = &quot;/var/lib/bacula&quot;
+  PidDirectory = &quot;/run/bacula&quot;
+  Maximum Concurrent Jobs = 20
+}
+
+Director {
+  Name = &quot;bacula-dir&quot;          # ← Must match Director Name in bacula-dir.conf
+  Password = &quot;SDPassword123!&quot;  # ← Must match Storage Password in bacula-dir.conf
+}
+
+Device {
+  Name = &quot;FileStorage&quot;         # ← Must match Device in Storage resource (bacula-dir.conf)
+  Media Type = &quot;File&quot;
+  Archive Device = &quot;/bacula/backup&quot;  # Actual path on disk where backups are stored
+  LabelMedia = yes
+  Random Access = Yes
+  AutomaticMount = yes
+  RemovableMedia = no
+  AlwaysOpen = no
+}
+
+Messages {
+  Name = Standard
+  director = bacula-dir = all
+}
+</code></pre>
+<hr>
+<h3 id="33-bacula-fdconf-on-each-openstack-vm">3.3 bacula-fd.conf (On Each OpenStack VM)</h3>
+<p>Install bacula-client on every OpenStack VM and configure this file. Each VM must have a unique Name and unique Password.</p>
+<h4 id="vm1-etcbaculabacula-fdconf">VM1 — /etc/bacula/bacula-fd.conf</h4>
+<pre><code class="language-ini">Director {
+  Name = &quot;bacula-dir&quot;          # ← Must match Director Name in bacula-dir.conf
+  Password = &quot;VM1Password!&quot;    # ← Must match Client Password in bacula-dir.conf
+}
+
+FileDaemon {
+  Name = &quot;vm1-fd&quot;              # ← Must match Client Name in bacula-dir.conf
+  FDport = 9102
+  WorkingDirectory = /var/lib/bacula
+  Pid Directory = /run/bacula
+  Maximum Concurrent Jobs = 20
+}
+
+Messages {
+  Name = Standard
+  director = bacula-dir = all, !skipped, !restored
+}
+</code></pre>
+<h4 id="vm2-etcbaculabacula-fdconf">VM2 — /etc/bacula/bacula-fd.conf</h4>
+<pre><code class="language-ini">Director {
+  Name = &quot;bacula-dir&quot;          # ← Same Director Name (same server)
+  Password = &quot;VM2Password!&quot;    # ← DIFFERENT password for each VM
+}
+
+FileDaemon {
+  Name = &quot;vm2-fd&quot;              # ← DIFFERENT unique name for each VM
+  FDport = 9102
+  WorkingDirectory = /var/lib/bacula
+  Pid Directory = /run/bacula
+  Maximum Concurrent Jobs = 20
+}
+
+Messages {
+  Name = Standard
+  director = bacula-dir = all, !skipped, !restored
+}
+</code></pre>
+<blockquote>
+<p><strong>TIP:</strong> For each additional VM: change ONLY the FileDaemon Name (e.g., vm3-fd) and the Password. The Director Name stays the same for all VMs pointing to the same Bacula server.</p>
+</blockquote>
+<hr>
+<h3 id="34-bconsoleconf-bacula-server">3.4 bconsole.conf (Bacula Server)</h3>
+<pre><code class="language-ini">Director {
+  Name = &quot;bacula-dir&quot;               # ← Must match Director Name in bacula-dir.conf
+  DIRport = 9101
+  address = 127.0.0.1
+  Password = &quot;ConsolePassword123!&quot;  # ← Must match Console Password in bacula-dir.conf
+}
+</code></pre>
+<hr>
+<h2 id="4-name-password-cross-reference">4. Name &amp; Password Cross-Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Set In (source)</th>
+<th>Must Also Appear In</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Director Name</td>
+<td>bacula-dir.conf — <code>Director { Name = "bacula-dir" }</code></td>
+<td>bacula-fd.conf, bacula-sd.conf, bconsole.conf</td>
+</tr>
+<tr>
+<td>Client Password (per VM)</td>
+<td>bacula-fd.conf — <code>Director { Password = "VMxPass" }</code></td>
+<td>bacula-dir.conf — <code>Client { Password = "VMxPass" }</code></td>
+</tr>
+<tr>
+<td>Client Name (per VM)</td>
+<td>bacula-fd.conf — <code>FileDaemon { Name = "vmx-fd" }</code></td>
+<td>bacula-dir.conf — <code>Client { Name }</code> and <code>Job { Client }</code></td>
+</tr>
+<tr>
+<td>SD Password</td>
+<td>bacula-sd.conf — <code>Director { Password = "SDPass" }</code></td>
+<td>bacula-dir.conf — <code>Storage { Password = "SDPass" }</code></td>
+</tr>
+<tr>
+<td>SD Device Name</td>
+<td>bacula-sd.conf — <code>Device { Name = "FileStorage" }</code></td>
+<td>bacula-dir.conf — <code>Storage { Device = "FileStorage" }</code></td>
+</tr>
+<tr>
+<td>Console Password</td>
+<td>bacula-dir.conf — <code>Console { Password = "ConsPass" }</code></td>
+<td>bconsole.conf — <code>Director { Password = "ConsPass" }</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-installation-steps">5. Installation Steps</h2>
+<h3 id="51-bacula-server">5.1 Bacula Server</h3>
+<p><strong>Ubuntu / Debian</strong></p>
+<pre><code class="language-bash">sudo apt update
+sudo apt install -y bacula bacula-common bacula-director-sqlite3 \
+                    bacula-storage bacula-console
+</code></pre>
+<p><strong>RHEL / CentOS / Rocky Linux</strong></p>
+<pre><code class="language-bash">sudo dnf install -y bacula-director bacula-storage bacula-console bacula-client
+</code></pre>
+<h3 id="52-file-daemon-on-each-openstack-vm">5.2 File Daemon on Each OpenStack VM</h3>
+<p><strong>Ubuntu / Debian</strong></p>
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt install -y bacula-client
+</code></pre>
+<p><strong>RHEL / CentOS / Rocky Linux</strong></p>
+<pre><code class="language-bash">sudo dnf install -y bacula-client
+</code></pre>
+<h3 id="53-enable-start-services">5.3 Enable &amp; Start Services</h3>
+<p><strong>On Bacula Server</strong></p>
+<pre><code class="language-bash">sudo systemctl enable bacula-director bacula-sd
+sudo systemctl start  bacula-director bacula-sd
+sudo systemctl status bacula-director bacula-sd
+</code></pre>
+<p><strong>On Each VM</strong></p>
+<pre><code class="language-bash">sudo systemctl enable bacula-fd
+sudo systemctl start  bacula-fd
+sudo systemctl status bacula-fd
+</code></pre>
+<h3 id="54-firewall-configuration">5.4 Firewall Configuration</h3>
+<p><strong>OpenStack VM (OS-level firewall)</strong></p>
+<pre><code class="language-bash"># Ubuntu/Debian
+sudo ufw allow 9102/tcp
+
+# RHEL/CentOS
+sudo firewall-cmd --permanent --add-port=9102/tcp
+sudo firewall-cmd --reload
+</code></pre>
+<p><strong>OpenStack Security Group</strong></p>
+<pre><code class="language-bash">openstack security group rule create \
+  --protocol tcp \
+  --dst-port 9102 \
+  --remote-ip &lt;BACULA_SERVER_IP&gt;/32 \
+  &lt;your-security-group-name&gt;
+</code></pre>
+<hr>
+<h2 id="6-recommended-config-directory-layout">6. Recommended Config Directory Layout</h2>
+<pre><code>/etc/bacula/
+├── bacula-dir.conf          # Main config — contains @include references
+├── bacula-sd.conf           # Storage Daemon config
+├── bacula-fd.conf           # File Daemon config (only on client VMs)
+├── bconsole.conf            # Console config
+├── clients/
+│   ├── vm1.conf
+│   ├── vm2.conf
+│   └── vm3.conf
+├── jobs/
+│   ├── backup-vm1.conf
+│   ├── backup-vm2.conf
+│   └── restore-all.conf
+├── filesets/
+│   └── common.conf
+└── schedules/
+    └── daily.conf
+</code></pre>
+<p>In <code>bacula-dir.conf</code> use <code>@include</code> to pull in all split files:</p>
+<pre><code class="language-ini">@/etc/bacula/filesets/common.conf
+@/etc/bacula/schedules/daily.conf
+@/etc/bacula/clients/vm1.conf
+@/etc/bacula/clients/vm2.conf
+@/etc/bacula/jobs/backup-vm1.conf
+@/etc/bacula/jobs/backup-vm2.conf
+@/etc/bacula/jobs/restore-all.conf
+</code></pre>
+<hr>
+<h2 id="7-verification-bconsole-commands">7. Verification &amp; bconsole Commands</h2>
+<h3 id="71-verify-config-syntax">7.1 Verify Config Syntax</h3>
+<pre><code class="language-bash">sudo bacula-dir -t -c /etc/bacula/bacula-dir.conf
+sudo bacula-sd  -t -c /etc/bacula/bacula-sd.conf
+sudo bacula-fd  -t -c /etc/bacula/bacula-fd.conf
+</code></pre>
+<h3 id="72-reload-after-config-changes">7.2 Reload After Config Changes</h3>
+<pre><code class="language-bash">echo 'reload' | sudo bconsole
+sudo systemctl restart bacula-director
+</code></pre>
+<h3 id="73-common-bconsole-commands">7.3 Common bconsole Commands</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status client=vm1-fd</code></td>
+<td>Test connection to a specific VM's FD</td>
+</tr>
+<tr>
+<td><code>status client=vm2-fd</code></td>
+<td>Test connection to another VM</td>
+</tr>
+<tr>
+<td><code>run job=Backup-VM1</code></td>
+<td>Manually trigger a backup job</td>
+</tr>
+<tr>
+<td><code>run job=Backup-VM1 level=Full</code></td>
+<td>Force a full backup</td>
+</tr>
+<tr>
+<td><code>list jobs</code></td>
+<td>List all jobs across all clients</td>
+</tr>
+<tr>
+<td><code>list jobs client=vm2-fd</code></td>
+<td>List jobs for a specific client</td>
+</tr>
+<tr>
+<td><code>list files jobid=&lt;ID&gt;</code></td>
+<td>List files backed up in a job</td>
+</tr>
+<tr>
+<td><code>restore client=vm1-fd</code></td>
+<td>Restore files to VM1</td>
+</tr>
+<tr>
+<td><code>restore client=vm2-fd where=/tmp/restore</code></td>
+<td>Restore to alternate path</td>
+</tr>
+<tr>
+<td><code>messages</code></td>
+<td>View recent log messages</td>
+</tr>
+<tr>
+<td><code>quit</code></td>
+<td>Exit bconsole</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-troubleshooting">8. Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorization error</td>
+<td>Password mismatch between FD and DIR</td>
+<td>Ensure Client Password in DIR matches Director Password in FD exactly</td>
+</tr>
+<tr>
+<td>Connection refused on 9102</td>
+<td>Firewall or security group blocking port</td>
+<td>Open port 9102 in OS firewall and OpenStack security group</td>
+</tr>
+<tr>
+<td>Fatal error: Director name mismatch</td>
+<td>Director Name in FD does not match actual DIR name</td>
+<td>Check <code>Director { Name }</code> in bacula-fd.conf matches bacula-dir.conf</td>
+</tr>
+<tr>
+<td>bacula-fd not starting</td>
+<td>Config syntax error</td>
+<td>Run: <code>bacula-fd -t -c /etc/bacula/bacula-fd.conf</code></td>
+</tr>
+<tr>
+<td>Cannot connect to SD</td>
+<td>SD Password mismatch or wrong Device name</td>
+<td>Verify Storage Password in DIR matches Director Password in SD</td>
+</tr>
+<tr>
+<td>Files missing from backup</td>
+<td>FileSet paths do not exist on VM</td>
+<td>Verify Include File paths in FileSet exist on the client VM</td>
+</tr>
+</tbody>
+</table>
+<h3 id="81-useful-log-locations">8.1 Useful Log Locations</h3>
+<pre><code class="language-bash"># Director log
+journalctl -u bacula-director -n 100 --no-pager
+
+# Storage Daemon log
+journalctl -u bacula-sd -n 100 --no-pager
+
+# File Daemon log (run on the VM)
+journalctl -u bacula-fd -n 100 --no-pager
+
+# Test TCP connectivity from Bacula server to VM
+telnet &lt;VM_IP&gt; 9102
+</code></pre>
+<hr>
+<h2 id="9-setup-checklist">9. Setup Checklist</h2>
+<h3 id="on-each-new-openstack-vm">On Each New OpenStack VM</h3>
+<ul>
+<li>[ ] Install bacula-client package</li>
+<li>[ ] Edit <code>/etc/bacula/bacula-fd.conf</code> — set unique FileDaemon Name (e.g., vm3-fd)</li>
+<li>[ ] Set Director Password — use a unique strong password</li>
+<li>[ ] Open port 9102 in OS firewall</li>
+<li>[ ] Enable and start bacula-fd service</li>
+<li>[ ] Open port 9102 in the OpenStack Security Group</li>
+</ul>
+<h3 id="on-the-bacula-server">On the Bacula Server</h3>
+<ul>
+<li>[ ] Add <code>Client {}</code> block in bacula-dir.conf with matching Name and Password</li>
+<li>[ ] Add <code>Job {}</code> block (Backup-VMx) referencing the new Client</li>
+<li>[ ] Reuse existing FileSet and Schedule</li>
+<li>[ ] Ensure Write Bootstrap path is unique per job</li>
+<li>[ ] Test syntax: <code>bacula-dir -t -c /etc/bacula/bacula-dir.conf</code></li>
+<li>[ ] Reload Director: <code>echo 'reload' | sudo bconsole</code></li>
+<li>[ ] Test connection: <code>status client=vm3-fd</code> in bconsole</li>
+<li>[ ] Run a test full backup: <code>run job=Backup-VM3 level=Full</code></li>
+</ul>
+<hr>
+<p><em>End of Document</em></p></div>
+          </article>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>&#169; 2026 Srijan Tangnami Magar</span>
+        <span>
+          <a href="/index.html">Home</a> &middot; <a href="/blogs.html">Blogs</a> &middot;
+          <a href="/index.html#contact">Contact</a> &middot; <a href="#top">Back to top &#8593;</a>
+        </span>
+      </footer>
+    </div>
+
+    <script src="/libs/highlight.min.js"></script>
+    <script src="/libs/copy-buttons.js"></script>
+    <script>
+      document.querySelectorAll('.markdown-content pre code').forEach(function (block) {
+        if (window.hljs) { try { window.hljs.highlightElement(block); } catch (e) {} }
+      });
+    </script>
+  </body>
+</html>

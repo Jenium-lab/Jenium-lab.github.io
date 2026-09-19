@@ -19,5 +19,19 @@
     "category": "General",
     "date": "2026-08-15",
     "excerpt": "Environment: Kolla-Ansible stable/2025.1, Ubuntu, Ceph Reef managed via cephadm, running as a nested cloud inside an outer OpenStack deployment the outer cloud\u2026"
+  },
+  {
+    "name": "Bacula_Backup_Documentation.md",
+    "title": "Bacula Backup Documentation",
+    "category": "General",
+    "date": "2026-08-27",
+    "excerpt": "Director \u2022 Storage Daemon \u2022 File Daemon \u2022 Multi-Client"
+  },
+  {
+    "name": "Terraform Components Explained.md",
+    "title": "Terraform Components Explained",
+    "category": "General",
+    "date": "2026-09-19",
+    "excerpt": "Or: how to stop clicking around cloud consoles and start writing infrastructure like code."
   }
 ]

@@ -11,6 +11,18 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://srijantangnamimagar.com.np/blogs/terraform-components-explained/</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://srijantangnamimagar.com.np/blogs/bacula_backup_documentation/</loc>
+    <lastmod>2026-08-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://srijantangnamimagar.com.np/blogs/masakari-ha-runbook/</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>

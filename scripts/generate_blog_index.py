@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import re
+import subprocess
 import sys
 from datetime import date
 from pathlib import Path
@@ -19,6 +20,22 @@ def title_from_name(name):
     return title[:1].upper() + title[1:] if title else "Untitled post"
 
 
+def git_file_date(name):
+    """First commit date for a blog file, used as its publish date (YYYY-MM-DD)."""
+    rel_path = str(Path(BLOGS_DIR / name).resolve().relative_to(ROOT.resolve()))
+    result = subprocess.run(
+        ["git", "-C", str(ROOT), "log", "--reverse", "--format=%cI", "--", rel_path],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return None
+    oldest = result.stdout.strip().splitlines()
+    if not oldest:
+        return None
+    return oldest[0][:10]
+
+
 def main():
     existing = []
     if INDEX_FILE.exists():
@@ -35,19 +52,23 @@ def main():
     for entry in existing:
         name = entry.get("name")
         if name in files:
+            if not entry.get("date"):
+                entry["date"] = git_file_date(name) or today
             posts.append(entry)
             seen.add(name)
 
     for name in files:
         if name not in seen:
+            post_date = git_file_date(name) or today
             posts.append(
                 {
                     "name": name,
                     "title": title_from_name(name),
                     "category": "General",
-                    "date": today,
+                    "date": post_date,
                 }
             )
+            print(f"New post {name!r} dated {post_date}")
 
     for post in posts:
         md_path = BLOGS_DIR / post["name"]

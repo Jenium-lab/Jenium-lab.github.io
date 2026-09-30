@@ -197,22 +197,58 @@ One PR runs all of this together:
 | Test | unit tests, pytest, jest | terraform validate, terraform plan, conftest policy |
 | Build | docker build test, go build, npm build | docker build, helm template, ansible dry run |
 
-Example run in one pipeline:
+Example run in one pipeline, all at same time in parallel runners:
 
 ```bash
-# code side
-ruff check .
-gitleaks detect --no-git
-pytest -q
-trivy fs --severity HIGH,CRITICAL .
+# code side - runner 1, 2, 3 run together
+ruff check . &
+gitleaks detect --no-git &
+pytest -q &
+trivy fs --severity HIGH,CRITICAL . &
+wait
 
-# IaC side in same PR
-terraform fmt -check
-terraform validate
+# IaC side in same PR - runner 4, 5 run together
+terraform fmt -check &
+terraform validate &
+wait
 terraform plan -out=tfplan
-checkov -d . --framework terraform
-conftest test tfplan.json
+checkov -d . --framework terraform &
+conftest test tfplan.json &
+wait
 ```
+
+Think of PR gate like school exam papers checked by many teachers at once. English teacher checks grammar, maths teacher checks sums, all at same time. Fast. No need to wait for one to finish to start next. Lint does not need test result. Secret scan does not need build result. So run them parallel.
+
+Simple parallel idea:
+
+```mermaid
+flowchart TD
+  PR[Pull Request] --> L1[Lint + Format]
+  PR --> L2[Unit Tests]
+  PR --> L3[Secrets + SAST]
+  PR --> L4[Vuln Scan]
+  PR --> L5[Terraform Validate + Plan]
+  L1 --> Gate{All Green?}
+  L2 --> Gate
+  L3 --> Gate
+  L4 --> Gate
+  L5 --> Gate
+  Gate -->|Yes| Review[Review]
+  Gate -->|No| Fix[Fix it]
+```
+
+```yaml
+# GitHub Actions idea: parallel jobs
+jobs:
+  lint: { runs-on: ubuntu-latest, steps: [...] }
+  test: { runs-on: ubuntu-latest, steps: [...] }
+  secrets: { runs-on: ubuntu-latest, steps: [...] }
+  iac: { runs-on: ubuntu-latest, steps: [...] }
+```
+
+One team ran 6 checks one by one. PR took 28 minutes. Everyone waited, coffee finished. They made them parallel. Same checks finished in 7 minutes. Fast reviews, happy team.
+
+Another team ran everything serially and also mixed build inside. Small lint mistake still ran full 20 minute docker build first. Waste of time and money.
 
 Note: PR build is only for testing. Throw it away. Real build happens only from main.
 
@@ -229,7 +265,26 @@ Another team merged a “small CSS fix” directly without checks. It had a bad 
 
 ## 9. Build One Time, Use Everywhere
 
-After merge, run all checks again from main, then build. Yes, again. PR tested the idea. Main is the truth. So lint, test, secret scan, vuln scan, IaC scan all run again, then the real build starts. This catches mix issues when two PRs merge together.
+After merge and review, steps must run one by one in order. Not parallel. Like cooking: first cut vegetables, then cook, then serve. You cannot serve before cooking.
+
+Order is fixed:
+
+```text
+main -> re-check -> build -> SBOM -> scan -> sign -> push -> deploy
+```
+
+You cannot sign before you build. You cannot push before you scan. You cannot deploy before you push. Each step needs the last step’s output. So run them sequential.
+
+```mermaid
+flowchart TD
+  Main[main] --> Build[Build - must pass first]
+  Build --> SBOM[SBOM - needs image]
+  Build --> Scan[Scan - needs image]
+  SBOM --> Sign[Sign - needs clean scan]
+  Scan --> Sign
+  Sign --> Registry[Push to Registry - needs signature]
+  Registry --> Deploy[Deploy - needs trusted image]
+```
 
 Then tag it clearly:
 

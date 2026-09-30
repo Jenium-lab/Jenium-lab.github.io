@@ -180,7 +180,7 @@ def build_page(post):
 
     <script src="/libs/highlight.min.js"></script>
     <script src="/libs/copy-buttons.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.8/dist/mermaid.min.js"></script>
     <script>
       document.querySelectorAll('.markdown-content pre:not(.mermaid) code').forEach(function (block) {{
         if (window.hljs) {{ try {{ window.hljs.highlightElement(block); }} catch (e) {{}} }}

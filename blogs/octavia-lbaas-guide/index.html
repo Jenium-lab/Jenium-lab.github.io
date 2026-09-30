@@ -793,10 +793,12 @@ docker logs octavia_health_manager 2&gt;&amp;1 | tail -20
 
     <script src="/libs/highlight.min.js"></script>
     <script src="/libs/copy-buttons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
-      document.querySelectorAll('.markdown-content pre code').forEach(function (block) {
+      document.querySelectorAll('.markdown-content pre:not(.mermaid) code').forEach(function (block) {
         if (window.hljs) { try { window.hljs.highlightElement(block); } catch (e) {} }
       });
+      if (window.mermaid) { try { window.mermaid.initialize({ startOnLoad: true, securityLevel: 'loose', theme: 'neutral' }); } catch (e) {} }
     </script>
   </body>
 </html>

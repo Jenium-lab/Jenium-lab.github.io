@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Production Grade CICD Blog | Srijan Tangnami Magar</title>
+    <meta name="description" content="A simple guide for anyone who pushes code and hopes nothing breaks. Works for AWS, Azure, GCP, OpenStack, VMware, bare metal and Kubernetes." />
+    <link rel="canonical" href="https://srijantangnamimagar.com.np/blogs/production-grade-cicd-blog/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Srijan Tangnami Magar" />
+    <meta property="og:title" content="Production Grade CICD Blog | Srijan Tangnami Magar" />
+    <meta property="og:description" content="A simple guide for anyone who pushes code and hopes nothing breaks. Works for AWS, Azure, GCP, OpenStack, VMware, bare metal and Kubernetes." />
+    <meta property="og:url" content="https://srijantangnamimagar.com.np/blogs/production-grade-cicd-blog/" />
+    <meta property="og:image" content="https://srijantangnamimagar.com.np/gemini-svg.svg" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Production Grade CICD Blog | Srijan Tangnami Magar" />
+    <meta name="twitter:description" content="A simple guide for anyone who pushes code and hopes nothing breaks. Works for AWS, Azure, GCP, OpenStack, VMware, bare metal and Kubernetes." />
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Production Grade CICD Blog",
+  "description": "A simple guide for anyone who pushes code and hopes nothing breaks. Works for AWS, Azure, GCP, OpenStack, VMware, bare metal and Kubernetes.",
+  "image": "https://srijantangnamimagar.com.np/gemini-svg.svg",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://srijantangnamimagar.com.np/blogs/production-grade-cicd-blog/"
+  },
+  "datePublished": "2026-09-30",
+  "dateModified": "2026-09-30",
+  "author": {
+    "@type": "Person",
+    "name": "Srijan Tangnami Magar",
+    "url": "https://srijantangnamimagar.com.np"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Srijan Tangnami Magar",
+    "url": "https://srijantangnamimagar.com.np"
+  }
+}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/gemini-svg.svg" />
+    <script src="/theme.js"></script>
+    <link rel="stylesheet" href="/styles.css?v=10" />
+    <script>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <div id="top" class="page-shell">
+
+      <nav class="nav" role="navigation">
+        <a class="brand" href="/index.html">
+          <span class="brand-mark">ST</span>
+          <span class="brand-name">Srijan&nbsp;<em>T.&nbsp;Magar</em></span>
+        </a>
+        <div class="nav-links">
+          <a href="/index.html#experience">Experience</a>
+          <a href="/index.html#skills">Skills</a>
+          <a href="/index.html#blogs">Blogs</a>
+          <a href="/index.html#contact">Contact</a>
+          <a class="nav-cta" href="/blogs.html">Blog archive&nbsp;&#x2197;</a>
+          <button class="theme-toggle" type="button" aria-label="Toggle light or dark theme">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+          </button>
+        </div>
+      </nav>
+
+      <header class="hero short-hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Blog Post</p>
+          <h1>Production Grade CICD Blog</h1>
+          <p class="meta">General &bull; 2026-09-30</p>
+          <div class="actions">
+            <a class="btn primary" href="/blogs.html">&#8592; Back to blog list</a>
+            <a class="btn secondary" href="/index.html">Home</a>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="section projects">
+          <article class="reader">
+            <nav class="post-toc"><strong>On this page</strong><ul><li style="margin-left:0px"><a href="#inside-this-blog">Inside This Blog</a></li><li style="margin-left:0px"><a href="#1-look-at-infrastructure-first">1. Look at Infrastructure First</a></li><li style="margin-left:0px"><a href="#2-keep-factory-and-house-separate">2. Keep Factory and House Separate</a></li><li style="margin-left:0px"><a href="#3-how-the-runner-talks-to-servers">3. How the Runner Talks to Servers</a></li><li style="margin-left:0px"><a href="#4-ssh-the-safe-way">4. SSH the Safe Way</a></li><li style="margin-left:0px"><a href="#5-network-and-login-are-different">5. Network and Login Are Different</a></li><li style="margin-left:0px"><a href="#6-do-not-give-ci-full-power">6. Do Not Give CI Full Power</a></li><li style="margin-left:0px"><a href="#7-config-and-secrets-are-different">7. Config and Secrets Are Different</a></li><li style="margin-left:0px"><a href="#8-one-universal-pr-gate-for-code-and-iac">8. One Universal PR Gate for Code and IaC</a></li><li style="margin-left:0px"><a href="#9-build-one-time-use-everywhere">9. Build One Time, Use Everywhere</a></li><li style="margin-left:0px"><a href="#10-know-what-is-inside-your-image">10. Know What Is Inside Your Image</a></li><li style="margin-left:0px"><a href="#11-let-kubernetes-pull">11. Let Kubernetes Pull</a></li><li style="margin-left:0px"><a href="#12-keep-secrets-in-vault">12. Keep Secrets in Vault</a></li><li style="margin-left:0px"><a href="#13-show-plan-before-you-apply">13. Show Plan Before You Apply</a></li><li style="margin-left:0px"><a href="#14-let-rules-check-automatically">14. Let Rules Check Automatically</a></li><li style="margin-left:0px"><a href="#15-who-gets-mail-when-pipeline-fails-or-passes">15. Who Gets Mail When Pipeline Fails or Passes</a></li><li style="margin-left:0px"><a href="#16-full-picture-in-one-place">16. Full Picture in One Place</a></li><li style="margin-left:0px"><a href="#the-one-picture-to-remember">The One Picture to Remember</a></li><li style="margin-left:0px"><a href="#17-at-the-end-your-cicd-itself-should-be-portable-working-deletable-replaceable">17. At The End, Your CI/CD Itself Should Be Portable, Working, Deletable, Replaceable</a></li></ul></nav>
+            <div class="content markdown-content"><p><em>A simple guide for anyone who pushes code and hopes nothing breaks. Works for AWS, Azure, GCP, OpenStack, VMware, bare metal and Kubernetes.</em></p>
+<blockquote>
+<p>Think CI/CD is just Code to Build to Deploy? Real CI/CD asks: how does the runner connect, how is it checked, what is tested, what is built, how is it kept safe, where is it kept, how is it released, and who can prove what happened?</p>
+</blockquote>
+<p>It was 2 AM. The pipeline showed green. Still production was down. It had deployed an old <code>latest</code> image with a password written inside the code, using full root access, and nobody knew who did what. Green did not mean safe.</p>
+<p>This blog explains CI/CD like a story. Simple words. Real examples.</p>
+<h2 id="inside-this-blog">Inside This Blog</h2>
+<ol>
+<li>Look at Infrastructure First</li>
+<li>Keep Factory and House Separate</li>
+<li>How the Runner Talks to Servers</li>
+<li>SSH the Safe Way</li>
+<li>Network and Login Are Different</li>
+<li>Do Not Give CI Full Power</li>
+<li>Config and Secrets Are Different</li>
+<li>One Universal PR Gate for Code and IaC</li>
+<li>Build One Time, Use Everywhere</li>
+<li>Know What Is Inside Your Image</li>
+<li>Let Kubernetes Pull</li>
+<li>Keep Secrets in Vault</li>
+<li>Show Plan Before You Apply</li>
+<li>Let Rules Check Automatically</li>
+<li>Who Gets Mail When Pipeline Fails or Passes</li>
+<li>Full Picture in One Place</li>
+<li>Your CI/CD Should Be Portable, Working, Deletable, Replaceable</li>
+</ol>
+<h2 id="1-look-at-infrastructure-first">1. Look at Infrastructure First</h2>
+<p>Do not start with YAML. Start with where your runner lives. GitHub Actions, GitLab Runner, Jenkins, all are just workers. Ask what they really need to touch.</p>
+<pre class="mermaid">flowchart TD
+  Git[Git Repository] --> Runner[CI/CD Runner]
+  Runner --> VM[Build VM]
+  Runner --> K8s[K8s Cluster]
+  Runner --> TF[Terraform / Cloud APIs]
+  TF --> Apps[Applications]
+  K8s --> Apps
+</pre>
+<p>I saw one small team draw this on paper for 30 minutes. Later adding a new server took only 10 minutes. Easy life.</p>
+<p>Another team opened port 22 to the full internet just for a demo. They forgot to close it. A stranger installed miners inside. The bill became huge and nobody knew who opened the port.</p>
+<h2 id="2-keep-factory-and-house-separate">2. Keep Factory and House Separate</h2>
+<p>Factory is where you build: runners, Jenkins, scanners. House is where people live: app, database, Kubernetes.</p>
+<pre class="mermaid">flowchart LR
+  subgraph Factory[Factory]
+    Runner[CI Runner] --> Vault[Vault]
+    Runner --> Registry[Registry]
+    Runner --> GitRepo[Git Repo]
+  end
+  Runner --> Deploy[Deployment]
+  Deploy --> Infra[House: Servers, K8s, DB]
+</pre>
+<p>One team kept them separate. Their build machine got full. Prod still worked. They fixed it slowly with tea.</p>
+<p>Another team kept Jenkins and prod on the same machine to save money. A test filled the disk. Both build and prod died together on sale day. Small saving, big loss.</p>
+<h2 id="3-how-the-runner-talks-to-servers">3. How the Runner Talks to Servers</h2>
+<p>Use the right tool for the right place. Like you walk to the shop, you take a train for far cities.</p>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>Use This</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linux VMs</td>
+<td>SSH, Ansible</td>
+</tr>
+<tr>
+<td>Kubernetes</td>
+<td>kubectl, Helm, Argo CD</td>
+</tr>
+<tr>
+<td>Cloud</td>
+<td>Terraform with cloud API</td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>WinRM, HTTPS</td>
+</tr>
+</tbody>
+</table>
+<p>One student team used Ansible for VMs and Argo CD for Kubernetes. Clear and calm.</p>
+<p>Another team tried to fix Kubernetes by SSHing into nodes and restarting docker. It worked for one day. Next day Kubernetes moved the app to another node and the problem came back during a live demo.</p>
+<h2 id="4-ssh-the-safe-way">4. SSH the Safe Way</h2>
+<p>If you need SSH, make a fresh key only for CI.</p>
+<pre><code class="language-bash">ssh-keygen -t ed25519 -C &quot;cicd-runner&quot;
+</code></pre>
+<p>Private key stays in CI secrets. Public key goes to the server.</p>
+<pre><code class="language-text">CI has private key -&gt; server checks public key -&gt; login as deploy-user
+</code></pre>
+<p>One team did this neatly. When a member left, they removed one key in 10 minutes. Done.</p>
+<p>One student pushed his private key to GitHub by mistake. Bots stole it in seconds. Someone started costly servers in his AWS account. Morning brought a shocking bill.</p>
+<h2 id="5-network-and-login-are-different">5. Network and Login Are Different</h2>
+<p>Two questions. Can you reach the server? And does the server trust you? Both must be yes.</p>
+<pre><code class="language-text">CI Runner -&gt; firewall check -&gt; server:22 -&gt; key check -&gt; in
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>From</td>
+<td>CI Runner</td>
+</tr>
+<tr>
+<td>To</td>
+<td>Prod VM</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>SSH 22</td>
+</tr>
+<tr>
+<td>Way</td>
+<td>key from secret store</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>private only, no public IP</td>
+</tr>
+</tbody>
+</table>
+<p>One team wrote this down. When deploy failed they found the firewall issue in 5 minutes.</p>
+<p>Another team spent a full day changing keys. Real problem was only that VPN was off. They checked the wrong thing all day.</p>
+<h2 id="6-do-not-give-ci-full-power">6. Do Not Give CI Full Power</h2>
+<p>Never do this:</p>
+<pre><code class="language-bash">deploy-user ALL=(ALL) NOPASSWD: ALL
+</code></pre>
+<p>That is giving full root. Instead allow only two or three needed commands:</p>
+<pre><code class="language-bash">deploy-user ALL=(ALL) NOPASSWD: /bin/systemctl restart myapp, /usr/local/bin/deploy-app
+</code></pre>
+<p>Think hotel room card. It should open one room, not all rooms.</p>
+<p>One team gave only restart permission. A leaked token could do almost nothing. They just changed the token and relaxed.</p>
+<p>Another team gave CI full root. A small typo in a script deleted important files on prod. Shop stayed closed for a full day. All for “easy permissions.”</p>
+<h2 id="7-config-and-secrets-are-different">7. Config and Secrets Are Different</h2>
+<p>See this file:</p>
+<pre><code class="language-bash">APP_NAME=payment-service
+APP_PORT=8080
+LOG_LEVEL=INFO
+DATABASE_HOST=db.internal
+DATABASE_PASSWORD=super-secret-password
+API_TOKEN=super-secret-token
+</code></pre>
+<p>First lines are normal info. Last two are secrets. Do not mix them.</p>
+<p>Keep normal info open:</p>
+<pre><code class="language-yaml">appName: payment-service
+appPort: 8080
+logLevel: info
+</code></pre>
+<p>Keep secrets locked:</p>
+<pre><code class="language-yaml">dbPassword: from vault
+apiToken: from vault
+</code></pre>
+<p>One team kept it split. To change log level they just edited config in 2 minutes. No stress.</p>
+<p>Another team put the DB password in Git. An old member still had the copy. Later data leaked. Police and news came in. Simple mistake, huge pain. And remember, just putting everything in env vars does not make it safe. Logs can leak them easily.</p>
+<h2 id="8-one-universal-pr-gate-for-code-and-iac">8. One Universal PR Gate for Code and IaC</h2>
+<p>Do not make two different gates, one for app code and one for Terraform. Make one gate for everything. Code, Terraform, Helm, Dockerfiles, Ansible, all go through the same door. Think of PR checks like airport security. Slow but needed before flight. Everyone stands in the same line.</p>
+<pre class="mermaid">flowchart TD
+  F[feature branch] --> PR[Pull Request to main]
+  PR --> CI{Universal Checks}
+  CI -->|Fail| Stop[Fix it]
+  CI -->|Pass| Review[Review]
+  Review --> Main[Merged]
+</pre>
+<p>One PR runs all of this together:</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>For Code</th>
+<th>For IaC and Images</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Format</td>
+<td>black, prettier, gofmt</td>
+<td>terraform fmt -check, yaml lint, helm lint</td>
+</tr>
+<tr>
+<td>Lint</td>
+<td>ruff, eslint, golangci-lint</td>
+<td>tflint, kube-linter, hadolint for Dockerfile</td>
+</tr>
+<tr>
+<td>Security in code</td>
+<td>Semgrep, CodeQL, SonarQube</td>
+<td>Checkov, tfsec, trivy config scan</td>
+</tr>
+<tr>
+<td>Libraries and vulns</td>
+<td>npm audit, pip audit, dependabot</td>
+<td>trivy fs, grype on plan, base image scan</td>
+</tr>
+<tr>
+<td>Secrets</td>
+<td>gitleaks, trufflehog</td>
+<td>same, plus no password in tf vars</td>
+</tr>
+<tr>
+<td>Test</td>
+<td>unit tests, pytest, jest</td>
+<td>terraform validate, terraform plan, conftest policy</td>
+</tr>
+<tr>
+<td>Build</td>
+<td>docker build test, go build, npm build</td>
+<td>docker build, helm template, ansible dry run</td>
+</tr>
+</tbody>
+</table>
+<p>Example run in one pipeline, all at same time in parallel runners:</p>
+<pre><code class="language-bash"># code side - runner 1, 2, 3 run together
+ruff check . &amp;
+gitleaks detect --no-git &amp;
+pytest -q &amp;
+trivy fs --severity HIGH,CRITICAL . &amp;
+wait
+
+# IaC side in same PR - runner 4, 5 run together
+terraform fmt -check &amp;
+terraform validate &amp;
+wait
+terraform plan -out=tfplan
+checkov -d . --framework terraform &amp;
+conftest test tfplan.json &amp;
+wait
+</code></pre>
+<p>Think of PR gate like school exam papers checked by many teachers at once. English teacher checks grammar, maths teacher checks sums, all at same time. Fast. No need to wait for one to finish to start next. Lint does not need test result. Secret scan does not need build result. So run them parallel.</p>
+<p>Simple parallel idea:</p>
+<pre class="mermaid">flowchart TD
+  PR[Pull Request] --> L1[Lint + Format]
+  PR --> L2[Unit Tests]
+  PR --> L3[Secrets + SAST]
+  PR --> L4[Vuln Scan]
+  PR --> L5[Terraform Validate + Plan]
+  L1 --> Gate{All Green?}
+  L2 --> Gate
+  L3 --> Gate
+  L4 --> Gate
+  L5 --> Gate
+  Gate -->|Yes| Review[Review]
+  Gate -->|No| Fix[Fix it]
+</pre>
+<pre><code class="language-yaml"># GitHub Actions idea: parallel jobs
+jobs:
+  lint: { runs-on: ubuntu-latest, steps: [...] }
+  test: { runs-on: ubuntu-latest, steps: [...] }
+  secrets: { runs-on: ubuntu-latest, steps: [...] }
+  iac: { runs-on: ubuntu-latest, steps: [...] }
+</code></pre>
+<p>One team ran 6 checks one by one. PR took 28 minutes. Everyone waited, coffee finished. They made them parallel. Same checks finished in 7 minutes. Fast reviews, happy team.</p>
+<p>Another team ran everything serially and also mixed build inside. Small lint mistake still ran full 20 minute docker build first. Waste of time and money.</p>
+<p>Note: PR build is only for testing. Throw it away. Real build happens only from main.</p>
+<pre><code class="language-text">PR -&gt; build to test + scan -&gt; throw
+main -&gt; real build -&gt; SBOM -&gt; scan -&gt; sign -&gt; keep
+</code></pre>
+<p>One junior pushed an AWS key in app code by mistake. Same PR also made a public S3 bucket in Terraform. The single gate stopped both in seconds. Two problems fixed before lunch.</p>
+<p>Another team kept code checks but skipped IaC checks because “Terraform is just infra.” That “just infra” opened the database to the internet. App code was perfect, infra was open. Hackers did not care which part was perfect.</p>
+<p>Another team merged a “small CSS fix” directly without checks. It had a bad library with a known vuln inside. No vuln scan ran on PR, so it went live and stole user data. App got removed from the store. One skipped scan, weeks of sorry posts.</p>
+<h2 id="9-build-one-time-use-everywhere">9. Build One Time, Use Everywhere</h2>
+<p>After merge and review, steps must run one by one in order. Not parallel. Like cooking: first cut vegetables, then cook, then serve. You cannot serve before cooking.</p>
+<p>Order is fixed:</p>
+<pre><code class="language-text">main -&gt; re-check -&gt; build -&gt; SBOM -&gt; scan -&gt; sign -&gt; push -&gt; deploy
+</code></pre>
+<p>You cannot sign before you build. You cannot push before you scan. You cannot deploy before you push. Each step needs the last step’s output. So run them sequential.</p>
+<pre class="mermaid">flowchart TD
+  Main[main] --> Build[Build - must pass first]
+  Build --> SBOM[SBOM - needs image]
+  Build --> Scan[Scan - needs image]
+  SBOM --> Sign[Sign - needs clean scan]
+  Scan --> Sign
+  Sign --> Registry[Push to Registry - needs signature]
+  Registry --> Deploy[Deploy - needs trusted image]
+</pre>
+<p>Then tag it clearly:</p>
+<pre><code class="language-bash">docker build -t myapp:1.4.2 -t myapp:a81c92f .
+docker push myapp:1.4.2
+</code></pre>
+<p>Do not trust <code>latest</code>. It tells nothing. Version plus commit id tells everything.</p>
+<pre class="mermaid">flowchart TD
+  Main[main] --> Build[Build]
+  Build --> SBOM[SBOM]
+  Build --> Scan[Scan]
+  SBOM --> Sign[Sign]
+  Scan --> Sign
+  Sign --> Registry[Registry]
+</pre>
+<p>One team used the same image in dev, staging and prod. Bug came in prod, they opened the same image in staging, found it fast.</p>
+<p>Another team built separately for each place. Staging worked, prod crashed on sale day because builds were slightly different. Same code, different result. Bad day.</p>
+<h2 id="10-know-what-is-inside-your-image">10. Know What Is Inside Your Image</h2>
+<p>What is inside your docker image right now? Many hidden libraries. You need a list. That list is called SBOM. Formats are CycloneDX and SPDX.</p>
+<pre><code class="language-bash">syft myapp:1.4.2 -o cyclonedx-json &gt; sbom.json
+grype myapp:1.4.2 --fail-on critical
+cosign sign --key cosign.key myapp:1.4.2
+</code></pre>
+<p>Simple idea: SBOM is the menu, scanning checks if food is bad, signing proves who cooked it.</p>
+<pre><code class="language-text">Source to Build to List to Scan to Sign to Store to Deploy
+</code></pre>
+<p>One team had SBOM ready. When a big new bug came, they searched in 2 minutes and fixed only 3 services. Nobody panicked.</p>
+<p>Another team had no list. Same bug came. They spent 3 weeks just finding where the bad library was. By then hackers had already entered.</p>
+<h2 id="11-let-kubernetes-pull">11. Let Kubernetes Pull</h2>
+<p>For VMs, SSH is fine. For Kubernetes, GitOps is best. CI builds the image and updates Git. Argo CD sees Git and updates Kubernetes. CI never touches the cluster directly.</p>
+<pre class="mermaid">flowchart TD
+  AppRepo[App Repo] --> CI[CI builds image]
+  CI --> Reg[Registry]
+  CI --> DeployRepo[Deploy Repo: new tag]
+  DeployRepo --> Argo[Argo CD]
+  Argo --> K8s[Kubernetes]
+</pre>
+<p>One team had a bad release at night. They just reverted Git from phone. Argo fixed it in a minute. They slept well.</p>
+<p>Another team kept full cluster keys in CI. The key leaked in logs. Strangers ran miners inside the cluster. Prod slowed down and bill tripled. Fixing took a full weekend.</p>
+<h2 id="12-keep-secrets-in-vault">12. Keep Secrets in Vault</h2>
+<p>CI variables are okay for 2-3 secrets. For many apps you need Vault.</p>
+<pre class="mermaid">flowchart TD
+  Vault[Vault] --> CI[CI gets short secret]
+  Vault --> K8s[Kubernetes via Agent]
+  K8s --> App[App]
+</pre>
+<p>App never knows the main password. It gets a short password for one hour, then a new one.</p>
+<pre><code class="language-text">Old: one password for years, shared in chat
+New: new password every hour, auto change
+</code></pre>
+<p>One team used short passwords. A laptop was stolen. The password inside died in 40 minutes. No fear.</p>
+<p>Another team used the same DB password for 3 years. It was in docs, chat, CI, everywhere. An angry ex-member logged in from home and deleted data. No record of who did it. Shop closed for a week.</p>
+<p>Small note: sealed means Vault is locked. Unsealed means open and ready. It can open with key pieces or cloud help.</p>
+<h2 id="13-show-plan-before-you-apply">13. Show Plan Before You Apply</h2>
+<p>Do not click in console. Write infra as code:</p>
+<pre><code class="language-text">terraform/
+  providers.tf
+  variables.tf
+  main.tf
+  outputs.tf
+  modules/
+</code></pre>
+<p>Flow is simple:</p>
+<pre class="mermaid">flowchart TD
+  Dev[Edit] --> PR[Pull Request]
+  PR --> Checks[fmt + validate + plan + scan]
+  Checks --> Review[Read plan]
+  Review --> Merge[Merge]
+  Merge --> Apply[Apply]
+  Apply --> Infra[Cloud]
+</pre>
+<p>One team read the plan carefully. Plan said “will delete database.” They stopped it. Saved all data with one comment.</p>
+<p>Another engineer typed <code>count = 50</code> instead of <code>5</code> and applied from laptop. Fifty costly machines started. Bill shocked everyone. State file also broke because laptop slept mid-work. Three days of cleanup.</p>
+<p>And never write passwords in code:</p>
+<pre><code class="language-hcl"># bad
+password = &quot;MySuperSecretPassword&quot;
+
+variable &quot;db_password&quot; {
+  type = string
+  sensitive = true
+}
+</code></pre>
+<p>Remember <code>sensitive</code> only hides logs, it still stays in state file. So keep state file safe in remote backend with lock.</p>
+<h2 id="14-let-rules-check-automatically">14. Let Rules Check Automatically</h2>
+<p>People forget rules. Machines do not. Write rules once:</p>
+<ul>
+<li>no public database</li>
+<li>no open SSH to world</li>
+<li>no secret in code</li>
+<li>must have CPU and memory limits</li>
+</ul>
+<pre class="mermaid">flowchart TD
+  TF[Terraform / K8s YAML] --> Policy[Policy check]
+  Policy -->|PASS| Go[Go ahead]
+  Policy -->|FAIL| Block[Stop]
+</pre>
+<p>Tools: OPA, Conftest, Checkov, tfsec, Kyverno. Start with 5 simple rules.</p>
+<p>One new member tried a risky pod. The tool stopped it politely and showed the safe way. He learned fast, prod stayed safe.</p>
+<p>Another college cluster had no limits. One buggy app ate full CPU. All 15 student projects died during viva. Teacher saw only errors. One simple rule could have saved marks.</p>
+<p>Also send alerts to Slack and keep notes: who changed what, when, which version, where it went. If you cannot answer in 5 minutes, your records are weak.</p>
+<h2 id="15-who-gets-mail-when-pipeline-fails-or-passes">15. Who Gets Mail When Pipeline Fails or Passes</h2>
+<p>Pipeline should not stay silent. Right person should get mail at right time. No spam to all.</p>
+<p>Simple rule: fail mail goes to the person who broke it plus reviewer. Pass mail goes only when it matters, like prod deploy.</p>
+<p>Who gets what:</p>
+<table>
+<thead>
+<tr>
+<th>When</th>
+<th>Mail To</th>
+<th>What to Write</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PR checks fail</td>
+<td>PR author, commit author</td>
+<td>which step failed, link to logs, how to fix</td>
+</tr>
+<tr>
+<td>PR checks pass</td>
+<td>no mail, just green tick</td>
+<td>avoid noise</td>
+</tr>
+<tr>
+<td>Main build fails</td>
+<td>author of last merge, team lead</td>
+<td>which commit broke main, urgent</td>
+</tr>
+<tr>
+<td>Security scan finds high vuln</td>
+<td>author plus security buddy</td>
+<td>which library, severity, fix version</td>
+</tr>
+<tr>
+<td>Staging deploy done</td>
+<td>QA group</td>
+<td>version ready for testing, what changed</td>
+</tr>
+<tr>
+<td>Prod deploy done</td>
+<td>full team plus owner</td>
+<td>version live, who approved, rollback link</td>
+</tr>
+<tr>
+<td>Prod deploy fails</td>
+<td>full team plus on-call</td>
+<td>urgent, error line, who is fixing</td>
+</tr>
+</tbody>
+</table>
+<p>One team did this well. Student broke a test at 4 PM. He got a mail in 2 minutes with failed test name and log link. He fixed by 4:30. Nobody else got disturbed.</p>
+<p>Another team mailed everyone for every small success. 200 mails a day. People made a filter to trash all CI mails. Then real prod failure mail also went to trash. Nobody saw it for 6 hours. Too many mails means no mails.</p>
+<p>How to do it simply:</p>
+<pre><code class="language-bash"># GitHub Actions example: mail only on failure to PR author
+# uses commit author email from git log
+git log -1 --pretty=format:'%ae'
+</code></pre>
+<pre><code class="language-yaml"># GitHub Actions short idea
+# on push to main: if fail, mail last committer
+# on PR: comment on PR, mail author only
+# on prod tag: mail team list
+</code></pre>
+<pre><code class="language-bash"># GitLab idea: mail author on fail
+# in .gitlab-ci.yml -&gt; notify job with when: on_failure
+# to: $GITLAB_USER_EMAIL, $CI_COMMIT_AUTHOR
+</code></pre>
+<pre><code class="language-groovy">// Jenkins idea: mail to culprits, not all
+// emailext to: '${CHANGES_SINCE_LAST_SUCCESS, showPaths=true}'
+// or mail to: developers, culprits, requester
+</code></pre>
+<p>Three small tips that save life:</p>
+<ul>
+<li>Use group mails, not personal mails. Like <code>backend-team@college.edu</code>, <code>prod-alerts@company.com</code>. People join and leave, group stays.</li>
+<li>Never put passwords in mail body. Only give links to logs. Mails stay forever in inbox.</li>
+<li>For prod, mail both success and failure. For dev, mail only failure. Less noise, more action.</li>
+</ul>
+<p>Also add same names to Slack or Teams if you use it. Mail for record, chat for fast action.</p>
+<h2 id="16-full-picture-in-one-place">16. Full Picture in One Place</h2>
+<p>Here is all of it together:</p>
+<pre class="mermaid">flowchart TD
+  Users[Users] --> Git[Git: App + Infra]
+  Git --> PR[Pull Request]
+  PR --> CI[CI: Lint, Test, Secrets, IaC, Build]
+  CI --> Review[Review]
+  Review --> Main[main]
+  Main --> Rel[Build + SBOM + Scan + Sign]
+  Rel --> Reg[Registry]
+  Reg --> CD[CD / GitOps]
+  CD --> Env[Dev to Staging to Prod]
+  Vault[Vault] -.-> CI
+  Vault -.-> Env
+</pre>
+<p>Ten simple rules:</p>
+<ol>
+<li>CI builds, CD releases. Keep them apart.</li>
+<li>Keep everything in Git: app, Terraform, pipeline, rules.</li>
+<li>Never put secrets in Git.</li>
+<li>Normal info open, secrets locked.</li>
+<li>No merge without green checks.</li>
+<li>Same image from dev to prod.</li>
+<li>Scan and sign every time.</li>
+<li>Give only needed power, nothing extra.</li>
+<li>Use short passwords that change often.</li>
+<li>Note everything: who, what, when, where.</li>
+</ol>
+<h2 id="the-one-picture-to-remember">The One Picture to Remember</h2>
+<pre><code class="language-text">SOURCE
+  to PULL REQUEST
+  to CHECK
+  to REVIEW
+  to MAIN
+  to BUILD with list, scan, sign
+  to STORE
+  to RELEASE with Argo CD or SSH or Terraform
+  to SERVER
+  to APP
+  to WATCH
+  to FEEDBACK
+</code></pre>
+<p>Three helpers always run beside it: Vault for secrets, security checks for safety, logs and alerts for watching.</p>
+<p>One team followed this. Deploys became boring. Many deploys a day, no fear, new person ships on day two. Happy life.</p>
+<p>Another team ignored this. Every deploy was fear. No Friday deploys, freeze before festivals, seniors awake at night, secrets in chat, nobody knows what version is live. Good people left. Users left too.</p>
+<p>Pick Jenkins or GitHub Actions or GitLab, it does not matter. Just answer: how to connect, how to login, what to check, what to build, how to keep safe, where to keep, how to release, how to manage secrets, how to prove it.</p>
+<h2 id="17-at-the-end-your-cicd-itself-should-be-portable-working-deletable-replaceable">17. At The End, Your CI/CD Itself Should Be Portable, Working, Deletable, Replaceable</h2>
+<p>Your app is portable. Your CI/CD should be also. Think of CI/CD like a food cart, not a fixed shop. You should be able to move it, start it, close it, change parts, anywhere.</p>
+<p>Portable means it runs anywhere. Same pipeline on laptop, college server, AWS, Azure. No “it only works on Jenkins in my room.” Use containers for jobs, keep tools in code, no magic clicks. One team moved from GitLab to GitHub in a day because all steps were in docker images. Another team wrote pipelines only for one server. Server died, all pipelines died with it.</p>
+<p>Working means anyone can run it and get the same result. Fresh member clones repo, runs one command, gets same build. Clear readme, sample env file, seed data. One team’s new intern deployed to dev on day one alone. Another team’s setup needed 10 calls to seniors and still failed because steps were only in someone’s head.</p>
+<p>Deletable means you can destroy and make again without fear. Dev env for each PR, delete after merge. <code>terraform destroy</code> actually works. No leftover bills. One team made 20 test envs for a fest, deleted all next day, bill zero. Another team was scared to delete anything because nobody knew what would break. Old test servers kept running for 2 years, eating money.</p>
+<p>Replaceable means no single tool holds you hostage. Today Jenkins, tomorrow GitHub Actions, same app. Keep build scripts outside the CI tool, use open formats like CycloneDX, OCI images. One team swapped scanners in an hour because logic was in a simple shell script. Another team wrote 500 lines inside one CI tool. To change tool meant rewriting everything, so they stayed stuck with a slow tool for years.</p>
+<p>Simple test for you: can you delete your full dev setup today and make it again tomorrow morning with only Git plus one command? If yes, you are safe. If no, that is your next work.</p>
+<p>Start small this week. Add secret check to one repo. Move one password to Vault. Stop using latest. Show terraform plan on PR. Make one env fully deletable and rebuildable. Small steps make it strong.</p></div>
+          </article>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>&#169; 2026 Srijan Tangnami Magar</span>
+        <span>
+          <a href="/index.html">Home</a> &middot; <a href="/blogs.html">Blogs</a> &middot;
+          <a href="/index.html#contact">Contact</a> &middot; <a href="#top">Back to top &#8593;</a>
+        </span>
+      </footer>
+    </div>
+
+    <script src="/libs/highlight.min.js"></script>
+    <script src="/libs/copy-buttons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+      document.querySelectorAll('.markdown-content pre:not(.mermaid) code').forEach(function (block) {
+        if (window.hljs) { try { window.hljs.highlightElement(block); } catch (e) {} }
+      });
+      if (window.mermaid) { try { window.mermaid.initialize({ startOnLoad: true, securityLevel: 'loose', theme: 'neutral' }); } catch (e) {} }
+    </script>
+  </body>
+</html>

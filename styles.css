@@ -1008,6 +1008,21 @@ a.contact-card:hover {
   padding-right: 64px;
 }
 
+/* Mermaid diagrams render SVG inside pre.mermaid: keep them light and centered
+   so they stay readable in both light and dark themes. */
+.markdown-content pre.mermaid {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  color: inherit;
+  text-align: center;
+  padding: 18px 12px;
+}
+
+.markdown-content pre.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
 .copy-btn {
   position: absolute;
   top: 10px;

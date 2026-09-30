@@ -705,10 +705,12 @@ telnet &lt;VM_IP&gt; 9102
 
     <script src="/libs/highlight.min.js"></script>
     <script src="/libs/copy-buttons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
-      document.querySelectorAll('.markdown-content pre code').forEach(function (block) {
+      document.querySelectorAll('.markdown-content pre:not(.mermaid) code').forEach(function (block) {
         if (window.hljs) { try { window.hljs.highlightElement(block); } catch (e) {} }
       });
+      if (window.mermaid) { try { window.mermaid.initialize({ startOnLoad: true, securityLevel: 'loose', theme: 'neutral' }); } catch (e) {} }
     </script>
   </body>
 </html>

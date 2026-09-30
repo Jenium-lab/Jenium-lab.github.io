@@ -33,5 +33,12 @@
     "category": "General",
     "date": "2026-09-19",
     "excerpt": "Or: how to stop clicking around cloud consoles and start writing infrastructure like code."
+  },
+  {
+    "name": "production-grade-cicd-blog.md",
+    "title": "Production Grade CICD Blog",
+    "category": "General",
+    "date": "2026-09-30",
+    "excerpt": "A simple guide for anyone who pushes code and hopes nothing breaks. Works for AWS, Azure, GCP, OpenStack, VMware, bare metal and Kubernetes."
   }
 ]

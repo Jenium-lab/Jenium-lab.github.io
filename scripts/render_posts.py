@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Render each markdown blog post to a static HTML page at blogs/<slug>/index.html."""
+import html
 import json
 import re
 import sys
@@ -60,6 +61,24 @@ def render_markdown(raw):
     return body, tokens
 
 
+MERMAID_RE = re.compile(
+    r'<pre><code class="language-mermaid">(.*?)</code></pre>',
+    re.S,
+)
+
+
+def convert_mermaid_fences(body_html):
+    """Turn ```mermaid fences into <pre class="mermaid"> blocks for mermaid.js.
+
+    Python-Markdown HTML-escapes fenced code, so unescape the diagram source
+    (arrows like --> and labels) before handing it to Mermaid.
+    """
+    def _replace(match):
+        code = html.unescape(match.group(1))
+        return f'<pre class="mermaid">{code}</pre>'
+    return MERMAID_RE.sub(_replace, body_html)
+
+
 def headings_toc(tokens):
     """Build the on-page TOC from the toc-extension tokens (h2 and below)."""
     entries = [t for t in tokens if t["level"] >= 2]
@@ -84,6 +103,7 @@ def build_page(post):
 
     raw = (BLOGS_DIR / name).read_text(encoding="utf-8")
     body_html, toc_tokens = render_markdown(raw)
+    body_html = convert_mermaid_fences(body_html)
     body_html = re.sub(r"^<h1[^>]*>.*?</h1>", "", body_html, count=1, flags=re.S).lstrip()
 
     page_title = f"{title} | {SITE_TITLE}"
@@ -160,10 +180,12 @@ def build_page(post):
 
     <script src="/libs/highlight.min.js"></script>
     <script src="/libs/copy-buttons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
-      document.querySelectorAll('.markdown-content pre code').forEach(function (block) {{
+      document.querySelectorAll('.markdown-content pre:not(.mermaid) code').forEach(function (block) {{
         if (window.hljs) {{ try {{ window.hljs.highlightElement(block); }} catch (e) {{}} }}
       }});
+      if (window.mermaid) {{ try {{ window.mermaid.initialize({{ startOnLoad: true, securityLevel: 'loose', theme: 'neutral' }}); }} catch (e) {{}} }}
     </script>
   </body>
 </html>

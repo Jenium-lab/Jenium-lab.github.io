@@ -16,6 +16,7 @@
 
   function addCopyButtons(root) {
     root.querySelectorAll('pre').forEach(function (pre) {
+      if (pre.classList.contains('mermaid')) return;
       var code = pre.querySelector('code');
       if (code) {
         var m = (code.className || '').match(/language-([\w-]+)/);

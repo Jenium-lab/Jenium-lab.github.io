@@ -43,9 +43,9 @@
   },
   {
     "name": "redis-memory-optimization.md",
-    "title": "Redis Memory Optimization: A Production Case Study",
+    "title": "How We Fixed Redis Memory Without Adding RAM",
     "category": "General",
     "date": "2026-11-24",
-    "excerpt": "When a full cache, 50 million evictions, and a 20% miss rate still do not justify buying more RAM."
+    "excerpt": "One server, 16 GB of memory, a full Redis cache, and a lesson in looking before buying."
   }
 ]

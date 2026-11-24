@@ -1,88 +1,86 @@
-# Redis Memory Optimization: A Production Case Study
+# How We Fixed Redis Memory Without Adding RAM
 
-*When a full cache, 50 million evictions, and a 20% miss rate still do not justify buying more RAM.*
+*One server, 16 GB of memory, a full Redis cache, and a lesson in looking before buying.*
 
-> "Is memory optimized, or is the only fix to add RAM to the VM?" That question turned into a two-hour read-only investigation, three config edits, and a decision **not** to spend money on hardware.
+> Someone asked: "Is memory being used well, or should we just add more RAM?" We spent two hours reading numbers. Then we changed three settings. We did not buy RAM.
 
-It looked like a simple capacity problem. Redis was using 9 GB, swap was full, the VM had 16 GB, and the cache was evicting keys by the million. The easy answer was "add RAM." The correct answer needed a question first: **is the memory being used well, and is the system actually suffering?**
+The server looked full. Redis was using about 9 GB. Swap was full. The cache was throwing away millions of keys. The easy answer was "buy more memory."
 
-This is the full case study. Real numbers, real commands, real mistakes I made while reading metrics, and the exact changes we made — plus the trigger conditions that would change the decision to "buy more RAM."
+We asked a better question first: **Is anything actually broken, and is memory being wasted somewhere else?**
 
-## Inside This Blog
+The answer was no to the first question and yes to the second.
 
-1. The Question
-2. The Host and the Cast
-3. First Evidence: Looks Like a Memory Crisis
-4. What "Redis Uses 9 GB" Actually Means
-5. The Real Symptom: A Cache Pinned at Its Cap
-6. The Hidden Waste: An Oversized Database Buffer Pool
-7. How to Measure a 24-Hour Delta
-8. A Monitoring Trap: Five Hosts, One Query
-9. The Decision: Optimize Before You Upsize
-10. The Exact Changes We Made
-11. Swap: What You Can and Cannot Grow on This VM
-12. Results and the BGSAVE Fork Scare
-13. When You *Should* Add RAM, and a Reusable Checklist
+This is the whole story, told in plain words. Real numbers, real commands, one mistake we made while reading the charts, and the exact changes we made.
+
+## What is inside
+
+1. The question
+2. The server
+3. What we saw first
+4. Why "Redis uses 9 GB" was not the whole story
+5. The real problem: old keys were being thrown away
+6. The wasted memory: MariaDB's cache was too big
+7. How we measured one day
+8. A mistake: we looked at the wrong server
+9. Our decision
+10. The three changes we made
+11. What swap can and cannot do here
+12. What happened after
+13. When you really should add RAM
+14. Simple rules you can reuse
 
 ---
 
-## 1. The Question
+## 1. The question
 
 The request was short:
 
-> "We have access to this server. See if the memory is optimized or not. Is there any solution, or only to add RAM in the VM?"
+> "See if memory is optimized, or if the only fix is to add RAM to the VM."
 
-Two very different problems hide behind that sentence:
+Two different problems hide in that sentence:
 
-- **Waste problem** — memory is being burned by bad configuration, fragmentation, or a leak. Fix that first; RAM will not help.
-- **Capacity problem** — the working set genuinely needs more memory than the machine has. Then RAM, sharding, or smaller data is the answer.
+- **Memory is being wasted.** Bad settings or a bug are eating space. Fix that first. More RAM would not help.
+- **The server really needs more memory.** The data is bigger than the machine. Then you buy RAM, split the data, or store less.
 
-You cannot tell them apart from `free -h`. You need layer-by-layer evidence.
+You cannot tell them apart by looking at free memory alone. You have to look layer by layer.
 
-The rule I follow is simple:
-
-```text
-OBSERVE → MEASURE → CORRELATE → IDENTIFY → RECOMMEND → VALIDATE
-```
-
-Never `GUESS → CHANGE → HOPE`. And never touch production before you have measured.
+Our rule: **look first, measure next, decide last.** Do not change things production runs on until you know what is wrong.
 
 ---
 
-## 2. The Host and the Cast
+## 2. The server
 
-Details that matter, with the public address redacted:
+Details, with the public address hidden:
 
 | Item | Value |
 |---|---|
-| Host | `<redis-host>` (production VM) |
-| OS | AlmaLinux 9.6 (Sage Margay) |
-| Kernel | 5.14.0-570.49.1.el9_6.x86_64 |
-| vCPU | 4 |
-| RAM | 15.7 GB |
-| Uptime | 75 days at investigation time |
-| Workload | Redis (cache), MariaDB 10.5.27, Grafana, Prometheus, nginx, Docker |
-| Monitoring | Prometheus `:9090`, redis_exporter `:9121`, Grafana `:3000` |
+| Machine | `<redis-host>` (production server) |
+| System | AlmaLinux 9.6 |
+| Processor | 4 CPUs |
+| Memory | 16 GB |
+| Running for | 75 days without a restart |
+| Main programs | Redis (cache), MariaDB (database), Grafana, Prometheus, nginx |
+| Charts | Prometheus, redis_exporter, Grafana |
 
-Set up a variable so commands stay readable and no credential gets echoed:
+We used a variable so commands stay short and no password shows up:
 
 ```bash
 HOST='<redis-host>'
 ssh redis@"$HOST" 'echo ok; uname -a; uptime; nproc'
 ```
 
-Credential handling matters. Redis needed `AUTH`. The password was read from the config and used in a variable — **never printed**:
+Redis needed a password. We read it from the config file into a variable and never printed it:
 
 ```bash
 PW=$(sudo awk '/^requirepass /{print $2}' /etc/redis/redis.conf)
 redis-cli --no-auth-warning -a "$PW" INFO memory
 ```
 
-That single habit is why no secret appears anywhere in this blog or in terminal scrollback.
+That is why no secret appears in this post.
 
 ---
 
-## 3. First Evidence: Looks Like a Memory Crisis
+## 3. What we saw first
 
 ```bash
 free -m
@@ -94,7 +92,7 @@ Mem:           15731       13639         238         307        1601        2092
 Swap:           1023        1023           0
 ```
 
-Fourteen of sixteen gigabytes used. Swap completely full. Only ~2 GB available. Then the process list:
+Almost all 16 GB was used. Swap was completely full. Only about 2 GB was free. Then we listed the biggest memory users:
 
 ```bash
 ps -eo pid,rss,pmem,comm --sort=-rss | head -12
@@ -108,42 +106,40 @@ ps -eo pid,rss,pmem,comm --sort=-rss | head -12
 2398738   90080  0.5 prometheus
 ```
 
-Two processes own ~80% of the machine: Redis at 9.2 GB and MariaDB at 4.1 GB.
+Two programs owned almost everything: Redis with 9.2 GB and MariaDB with 4.1 GB.
 
-At this point the "add RAM" story looks convincing. Two facts push back:
+At this point "buy more RAM" sounds right. Two things made us pause:
 
-1. `vmstat 1 3` showed `si = 0`, `so = 0` — **no swap I/O**. The full swap was not thrashing.
-2. `uptime` showed load `0.54` on 4 cores, and CPU was ~95% idle.
+1. Swap was full, but the server was not actually swapping. `vmstat` showed `si = 0` and `so = 0`.
+2. The server was almost idle. Load was `0.54` on 4 CPUs, and the processors were 95% free.
 
-Memory was full, but the machine was **not busy**. That is a configuration clue, not an emergency.
+Memory was full, but the server was not working hard. That means settings, not a shortage.
 
 ---
 
-## 4. What "Redis Uses 9 GB" Actually Means
+## 4. Why "Redis uses 9 GB" was not the whole story
 
-This is the part people get wrong most often. `RSS` is **not** the dataset.
+Most people read the 9 GB number and stop. But Redis and Linux count memory in different ways.
 
-Four different numbers describe Redis memory:
-
-| Concept | Meaning |
+| Number | What it really means |
 |---|---|
-| `used_memory` | Bytes allocated by the allocator for the dataset + overhead |
-| `used_memory_rss` | Resident set seen by the OS (allocator arenas, fragmentation, pages) |
-| `maxmemory` | Hard cap on the **dataset**, not on RSS |
-| `mem_fragmentation_ratio` | `rss / used_memory` — allocator health, not dataset size |
+| `used_memory` | Memory Redis uses for stored data plus its own small costs |
+| `used_memory_rss` | Memory Linux sees for the Redis process |
+| `maxmemory` | The limit Redis puts on **stored data**, not on the Linux number |
+| `mem_fragmentation_ratio` | How much extra space Redis's memory manager is holding |
 
 The real numbers:
 
 ```text
 used_memory             7.96 G
 used_memory_rss         8.82 G
-maxmemory               8.00 G   (allkeys-lru)
+maxmemory               8.00 G
 mem_fragmentation_ratio 1.11
-allocator_frag_ratio    1.09
-mem_allocator           jemalloc-5.1.0
 ```
 
-Then `MEMORY STATS` and `MEMORY DOCTOR`:
+The ratio `1.11` means about 11% extra space. That is fine. A bad number would be 1.5 or higher.
+
+Then we asked Redis itself if it saw a problem:
 
 ```text
 dataset.bytes       8,444,726,688
@@ -152,34 +148,28 @@ overhead.total         96,375,296
 keys.count               968,877
 keys.bytes-per-key        8,814
 
-MEMORY DOCTOR: "Hi Sam, I can't find any memory issue in your instance."
+MEMORY DOCTOR: "I can't find any memory issue in your instance."
 ```
 
-Three conclusions, all evidence-backed:
-
-1. **No leak.** `used_memory` was inside `maxmemory`; RSS tracked it closely.
-2. **No fragmentation problem.** Ratio 1.11 is healthy. Above ~1.5 would be a concern; above ~1.0 with low usage is normal.
-3. **No waste inside Redis.** 98.88% of allocated memory was actual dataset; overhead was 96 MB on 8 GB.
-
-The extra ~0.8 GB of RSS is jemalloc arena behavior, not lost memory. `activedefrag yes` was already enabled, correctly.
+Almost all memory (98.88%) was real stored data. Only 96 MB was overhead. No leak. No mess.
 
 ```mermaid
 flowchart LR
-  A["maxmemory 8 GB<br/>dataset cap"] --> B["used_memory 7.96 GB<br/>dataset + overhead"]
-  B --> C["dataset 98.88%<br/>8.44 GB"]
-  B --> D["overhead 96 MB"]
-  C --> E["RSS 8.82 GB<br/>jemalloc arenas"]
+  A["8 GB limit<br/>for stored data"] --> B["7.96 GB used"]
+  B --> C["98.88% real data"]
+  B --> D["96 MB overhead"]
+  C --> E["Linux sees 8.82 GB"]
   D --> E
-  E --> F["fragmentation 1.11<br/>HEALTHY"]
+  E --> F["11% extra space<br/>HEALTHY"]
 ```
 
-**Redis was configured correctly. The problem was elsewhere.**
+**Redis was set up correctly.** The answer had to be somewhere else.
 
 ---
 
-## 5. The Real Symptom: A Cache Pinned at Its Cap
+## 5. The real problem: old keys were being thrown away
 
-`maxmemory 8GB` with `maxmemory-policy allkeys-lru` means Redis evicts the least recently used key when the dataset hits 8 GB. That is intended behavior for a cache. But look at the counters:
+Redis was told: "When you reach 8 GB, throw away the key that was used longest ago." That is normal for a cache. But look at the counters:
 
 ```text
 evicted_keys         49,735,447
@@ -188,66 +178,49 @@ keyspace_hits       603,837,804
 keyspace_misses     166,761,666
 ```
 
-Miss rate:
+Out of every 10 lookups, about **2 failed** because the key was gone:
 
 ```text
 166,761,666 / (603,837,804 + 166,761,666) = 21.6%
 ```
 
-Almost every key in `db2` had a TTL:
+Almost every key had an expiry time. So this was a temporary cache, full at its 8 GB limit, throwing away roughly one whole set of keys every day.
 
-```text
-db2:keys=968,180, expires=968,178, avg_ttl=1,869,283,522 ms
-```
-
-So this was a TTL cache, full at its cap, churning roughly **one full keyspace per day** of evictions. That is the actual symptom — not waste, not a leak, but a working set slightly larger than the configured cap.
-
-Important nuance: **evictions alone are not a problem.** A cache is supposed to evict. The question is whether the misses hurt anyone.
+But here is the important part: **throwing away keys is not bad by itself.** Caches are supposed to do that. The question is whether users felt it.
 
 ---
 
-## 6. The Hidden Waste: An Oversized Database Buffer Pool
+## 6. The wasted memory: MariaDB's cache was too big
 
-The second 4 GB process was MariaDB. Its config:
+The other big user was MariaDB. Its setting:
 
 ```ini
 # /etc/my.cnf, line 20
 innodb_buffer_pool_size = 4G
-max_connections          = 500
 ```
 
-Database size:
+This is memory MariaDB keeps for table data so it does not read the disk often. The database was 11.88 GB, so 4 GB sounded reasonable.
 
-```text
-nrm_gosports   11.88 GB
-```
-
-A 4 GB pool on an 11.88 GB database sounds reasonable. But the status counters said otherwise:
+But the counters told a different story:
 
 ```text
 Innodb_buffer_pool_read_requests  12,854,343,571
 Innodb_buffer_pool_reads                  66,728
 ```
 
-Hit ratio:
+MariaDB found the data in memory **99.9995%** of the time. In 75 days it only read from disk 66,728 times out of 12.8 billion requests.
 
-```text
-1 - 66,728 / 12,854,343,571 = 99.9995%
-```
+The part of the database people actually use was much smaller than 4 GB. Several gigabytes were sitting unused.
 
-Only **66,728 disk reads in 75 days** against 12.8 billion buffer-pool reads. The actively used subset of that 11.88 GB database was comfortably smaller than 4 GB. Several gigabytes were parked in a pool that did not need them.
-
-This is the "solution" the question was looking for: the RAM already existed on the VM — it was assigned to the wrong process.
+**This was the answer.** The memory was already on the server. It was just given to the wrong program.
 
 ---
 
-## 7. How to Measure a 24-Hour Delta
+## 7. How we measured one day
 
-Both `evicted_keys` and `keyspace_misses` are cumulative counters since Redis started. You need a **delta**, not the raw value.
+Both Redis counters keep adding up since the server started. One reading tells you nothing. You need the difference between two readings.
 
-Always measure change, because one snapshot proves nothing. Two options:
-
-### Option A — Prometheus (best, history already stored)
+The easy way: we already had Prometheus saving the numbers.
 
 ```bash
 curl -s --get 'http://localhost:9090/api/v1/query' \
@@ -260,261 +233,236 @@ curl -s --get 'http://localhost:9090/api/v1/query' \
   --data-urlencode 'query=increase(redis_keyspace_misses_total[24h]) / (increase(redis_keyspace_misses_total[24h]) + increase(redis_keyspace_hits_total[24h]))'
 ```
 
-### Option B — Two manual snapshots
+Plain English: "how many keys were thrown away in the last day" and "what share of lookups failed in the last day."
 
-```bash
-# now
-redis-cli ... INFO stats | grep -E 'evicted_keys|keyspace_hits|keyspace_misses'
-# exactly 24h later, run again and subtract
-```
+What we got:
 
-Baseline at investigation time:
-
-| Metric | Value |
+| Number | Value |
 |---|---|
-| Evictions (24h) | 726,424 |
-| Misses (24h) | 3,278,746 |
-| Miss ratio (24h) | 20.03% |
-| Evict rate (5m) | 3.98/s |
-| Evict rate (1h) | 0.32/s |
+| Keys thrown away in 24h | 726,424 |
+| Failed lookups in 24h | 3,278,746 |
+| Failed lookups share | 20.03% |
+| Throwing-away rate now | 4 per second |
 
-The 5m-vs-1h difference told us evictions were **bursty**, probably TTL-expiry waves — not constant thrash.
+Then we looked back 14 days:
 
-Then I widened the window to 14 days:
-
-| Window | Evictions/day | Miss ratio |
+| Time window | Keys thrown away per day | Failed lookups share |
 |---|---|---|
-| 1 day | 726,424 | 20.03% |
+| Last 1 day | 726,424 | 20.03% |
 | 7-day average | 940,866 | 20.67% |
 | 14-day average | 787,151 | — |
 
-**Flat.** No growth. Combined with flat `used_memory`, flat RSS, flat key count, and no restarts in 75 days, this ruled out a leak or a growing working set. It also meant the cache had been at steady state for weeks.
+**Flat.** No growth. Same as it had been for weeks. Stored data was flat too. Key count was flat. The server had not restarted in 75 days.
 
-Correlation with the rest of the machine completed the picture:
+That rules out a leak or a growing problem.
 
-| Signal | Value |
+Then we checked whether the misses hurt anything:
+
+| Number | Value |
 |---|---|
-| CPU busy | 2.3–4.3% |
-| Load1 | 0.00–0.30 |
-| MariaDB hit ratio | 99.9995% |
-| Redis connected clients | 3 |
+| Processor use | 2.3–4.3% |
+| Load | 0.00–0.30 |
+| MariaDB cache success | 99.9995% |
+| Redis users connected | 3 |
 
-A 20% Redis miss rate with an otherwise **idle** system means the misses are being absorbed without pain. That is the difference between "measurable" and "harmful."
+A 20% cache miss on an almost idle server is not hurting anyone. It is a number worth watching, not a fire to fight.
 
 ---
 
-## 8. A Monitoring Trap: Five Hosts, One Query
+## 8. A mistake: we looked at the wrong server
 
-Here is a mistake worth publishing, because it is easy to repeat.
+This one is worth sharing.
 
-Prometheus scraped five node_exporter targets:
+Prometheus watched five servers. When we asked for memory numbers, we took the first answer it gave. That answer came from a different server, not Redis.
 
-```text
-backend-server   .62:9100
-frontend-server  .63:9100
-database-server  .64:9100
-redis-server     .65:9100
-migrate-server   .66:9100
-```
+| Server | Free memory it reported | Swap it reported |
+|---|---|---|
+| Wrong server | 6.2 GB | 31 MB |
+| Redis server | 2.2 GB | 1.0 GB |
 
-I queried `node_memory_MemAvailable_bytes` and took `data.result[0]`. That returned **`.62`**, not `.65`:
+Our first table was about the wrong machine. We only noticed because the swap number did not match what `swapon --show` said on the Redis server.
 
-```text
-.62 → 6.2 GB available, 31 MB swap used
-.65 → 2.2 GB available, 1.0 GB swap used
-```
-
-Completely different hosts. My first "trend table" was for the wrong machine. I only caught it because the swap number contradicted `swapon --show` on the Redis host.
-
-**Fix: always filter by instance.**
+The fix is simple: always say which server you mean.
 
 ```promql
 node_memory_MemAvailable_bytes{instance="<redis-host>:9100"}
-
-(node_memory_SwapTotal_bytes{instance="<redis-host>:9100"}
- - node_memory_SwapFree_bytes{instance="<redis-host>:9100"})
 ```
 
-Rule: **never trust `result[0]` when multiple targets expose the same metric.** Label your graphs and verify the `instance` value before drawing conclusions.
+**Never trust the first result when many servers report the same number.** Check the machine name on every chart.
 
 ---
 
-## 9. The Decision: Optimize Before You Upsize
+## 9. Our decision
 
-The decision was made from the 14-day history, not a screenshot:
-
-| Question | Answer | Evidence |
+| Question | Answer | Why |
 |---|---|---|
-| Memory leak? | No | RSS, keys, used_memory, miss ratio all flat |
-| Redis misconfigured? | No | Frag 1.11, dataset 98.9%, `MEMORY DOCTOR` clean |
-| Under pressure now? | Mild | 1.5 GB available floor, swap full but `si/so`=0 |
-| Users suffering? | No evidence | CPU 3–4%, load <0.3, DB hit 99.9995% |
-| Buy RAM? | **Not yet** | No growth, no saturation, spare capacity misallocated |
+| Memory leak? | No | Numbers flat for 14 days |
+| Redis badly set up? | No | Only 11% extra space, Redis says it is fine |
+| Server struggling? | No | Processors nearly idle |
+| Users suffering? | No sign | Database still answers from memory almost always |
+| Buy RAM? | **Not yet** | Memory is free on the server, just in the wrong place |
 
 ```mermaid
 flowchart TD
-  A["Memory looks full"] --> B{"Fragmentation high?"}
-  B -->|"No, 1.11"| C{"Counters growing?"}
-  B -->|"Yes"| Z["Fix allocator / defrag"]
-  C -->|"No, flat 14d"| D{"System busy?"}
-  C -->|"Yes"| Y["Leak or growth — investigate"]
-  D -->|"No, CPU 3%"| E{"Waste elsewhere?"}
-  D -->|"Yes"| X["Profile bottleneck"]
-  E -->|"Yes: MariaDB 4G pool"| F["Reallocate first"]
-  E -->|"No"| G{"Miss rate hurting?"}
-  G -->|"No"| H["Accept, monitor"]
-  G -->|"Yes"| I["Add RAM / shard / shrink data"]
-  F --> J["Re-measure 24-48h"]
+  A["Memory looks full"] --> B{"Lots of extra space?"}
+  B -->|"No, 11%"| C{"Numbers growing?"}
+  B -->|"Yes"| Z["Fix Redis memory manager"]
+  C -->|"No, flat 14 days"| D{"Server busy?"}
+  C -->|"Yes"| Y["Find the leak"]
+  D -->|"No, 3% CPU"| E{"Waste somewhere else?"}
+  D -->|"Yes"| X["Find the slow part"]
+  E -->|"Yes: MariaDB cache 4 GB"| F["Move memory to Redis"]
+  E -->|"No"| G{"Do misses hurt users?"}
+  G -->|"No"| H["Accept it, keep watching"]
+  G -->|"Yes"| I["Add RAM or store less data"]
+  F --> J["Measure again in 24-48h"]
 ```
 
-The principle: **do not upsize until configuration is measured, the bottleneck identified, and waste/leaks ruled out.**
+Rule: **do not buy a bigger server until you have measured the one you have.**
 
 ---
 
-## 10. The Exact Changes We Made
+## 10. The three changes we made
 
-Three changes. All are `RECOMMENDED CHANGE` items executed only after the read-only investigation.
-
-### Change 1 — Redis `maxmemory` 8 GB → 10 GB
+### Change 1 — Give Redis more room: 8 GB → 10 GB
 
 ```ini
 # /etc/redis/redis.conf, line 2059
 maxmemory 10GB
 ```
 
-Applied live, no restart:
+No restart needed. Redis can change this while running:
 
 ```bash
 PW=$(sudo awk '/^requirepass /{print $2}' /etc/redis/redis.conf)
 redis-cli --no-auth-warning -a "$PW" CONFIG SET maxmemory 10GB
 ```
 
-Rollback is instant: `CONFIG SET maxmemory 8GB`. `maxmemory-policy allkeys-lru` and `activedefrag yes` were already correct — left alone.
+To undo: `CONFIG SET maxmemory 8GB`. The other settings were already right, so we left them.
 
-### Change 2 — MariaDB buffer pool 4 G → 2 G
+### Change 2 — Give MariaDB less: 4 GB → 2 GB
 
 ```ini
 # /etc/my.cnf, line 20
 innodb_buffer_pool_size = 2G
 ```
 
-Verified there were **no other overrides** under `/etc/my.cnf.d/`. MariaDB 10.5 supports dynamic resize; it can also be done with a planned restart:
+We checked first that no other file changed this setting. MariaDB can also change it while running:
 
 ```sql
 SET GLOBAL innodb_buffer_pool_size = 2147483648;
 SHOW VARIABLES LIKE 'innodb_buffer_pool_size';
 ```
 
-Rollback: set it back to `4294967296` (or revert line 20 and restart).
+To undo: set it back to `4294967296`, or put back line 20 and restart MariaDB.
 
-### Change 3 — Add a 4 GB swapfile
+### Change 3 — Add 4 GB of swap as a safety net
 
-The existing 1 GB swap was an LVM volume. It could **not** be grown:
+The old swap was 1 GB and could not be made bigger:
 
 | Check | Result |
 |---|---|
-| VG `almalinux` free | 0 |
-| PV `/dev/sda2` free | 0 |
-| Disk `/dev/sda` | 100 GiB, fully partitioned |
-| Root filesystem | XFS — cannot shrink |
-| `/` free space | 50 GB |
+| Extra disk space in the disk group | 0 |
+| Disk fully used up | Yes |
+| Disk type | Cannot give space back |
+| Free space in the main folder | 50 GB |
 
-So a swapfile on `/` was the only zero-downtime path:
+So we made a file and told Linux to use it as swap:
 
 ```bash
 sudo fallocate -l 4G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 
-# SELinux was Enforcing; swapfile_t exists in the targeted policy
+# Security was on, so the file needed the right label
 sudo semanage fcontext -a -t swapfile_t "/swapfile"
 sudo restorecon -v /swapfile
 
 sudo swapon /swapfile
 ```
 
-Persisted in `/etc/fstab` (existing swap line kept):
+To keep it after a restart, we added one line to `/etc/fstab`:
 
 ```text
 /swapfile   none   swap   defaults   0 0
 ```
 
-Before rebooting, validate fstab **without mounting anything**:
+Before any restart, check the file is correct:
 
 ```bash
 sudo findmnt --verify --verbose
 # Success, no errors or warnings detected
 ```
 
-Rollback: `swapoff /swapfile`, remove the file and the fstab line.
+To undo: `swapoff /swapfile`, delete the file, remove the fstab line.
 
-> We actually forgot `swapon /swapfile` on the first pass. The file, label, and fstab line were all correct, but `/proc/swaps` showed only the old 1 GB volume. Lesson: **prepared is not enabled — verify runtime state, not just files.**
+> We forgot `swapon /swapfile` the first time. The file, label, and fstab line were all correct, but swap was still only 1 GB. **A file being ready is not the same as it being on. Always check the running state.**
 
 ---
 
-## 11. Swap: What You Can and Cannot Grow on This VM
+## 11. What swap can and cannot do here
 
-A useful mental model for swap on Linux:
-
-| Situation | Can grow swap? | How |
+| Situation | Can you grow swap? | How |
 |---|---|---|
-| VG has free extents | Yes | `lvextend` the swap LV |
-| Root is XFS, VG full | No (cannot shrink root) | Add a swapfile |
-| Disk fully partitioned | No | Provider disk expansion or second disk |
-| Filesystem has free space | Yes | Swapfile (works on XFS with kernel 5.14) |
+| Extra space in disk group | Yes | Make the swap volume bigger |
+| Disk cannot shrink, group is full | No | Use a swap file |
+| Disk completely full | No | Ask provider for more disk |
+| Main folder has free space | Yes | Swap file works here |
 
-And remember what swap actually does. It is an **OOM safety cushion**, not a performance fix. Adding 4 GB of swap did not lower the Redis miss rate by even one percent. It only widened the margin for a memory spike.
+Swap is a **safety net**, not a speed fix. Adding 4 GB of swap did not change the failed-lookup number at all. It only gives the server more room if memory suddenly spikes.
 
-Also check the activity, not just usage:
+Also check activity, not just usage:
 
 ```bash
 vmstat 1 5
-# si=0, so=0  -> no swap thrash
+# si=0, so=0 means it is not actually swapping
 ```
 
-A full swap with zero swap I/O is a different animal from a swapping system. Treat them differently.
+Full swap with no swapping is very different from a server that is swapping nonstop. Do not treat them the same.
 
 ---
 
-## 12. Results and the BGSAVE Fork Scare
-
-After the changes:
+## 12. What happened after
 
 | Check | Before | After |
 |---|---|---|
-| Redis `maxmemory` | 8 GB | **10 GB** |
-| Redis `used_memory` | 7.96 GB (pinned) | 8.57 GB (1.4 GB headroom) |
-| Fragmentation ratio | 1.11 | **1.05** |
-| Evictions | ~0.7–1.2 M/day | effectively stopped |
-| MariaDB pool | 4 GB | 2 GB |
-| MariaDB hit ratio | 99.9995% | **99.9995%** (unchanged) |
-| MariaDB disk reads | 66,728 | 66,728 (no new reads) |
-| Swap total | 1 GiB | **5 GiB** |
-| Load average | 0.54 | 0.44 |
-| MemAvailable | ~2.0 GB | ~2.4 GB |
+| Redis limit | 8 GB | **10 GB** |
+| Redis stored data | 7.96 GB, stuck at limit | 8.57 GB, 1.4 GB free |
+| Extra space | 11% | **5%** |
+| Keys thrown away | 0.7–1.2 million per day | almost none |
+| MariaDB cache | 4 GB | 2 GB |
+| MariaDB cache success | 99.9995% | **99.9995%**, unchanged |
+| MariaDB disk reads | 66,728 | 66,728, no new reads |
+| Swap | 1 GB | **5 GB** |
+| Load | 0.54 | 0.44 |
+| Free memory | about 2.0 GB | about 2.4 GB |
 
-The MariaDB result is the important one: after halving the pool, the disk-read counter **did not move**. The shrinking was safe.
+The MariaDB line is the important one. After we cut its cache in half, the disk-read number did not move. The change was safe.
 
-### Why `ps` showed two 9 GB Redis processes
+### Why two Redis processes showed up
 
-After the change, `ps` briefly showed:
+After the change, `ps` showed two Redis processes, each around 9 GB:
 
 ```text
 4122742 9070200 56.3 redis-server
     769 8810392 54.6 redis-server
 ```
 
-That looks alarming. It is not a second Redis instance. It is the **BGSAVE fork child**:
+That looks scary. It is not a second Redis.
 
-- RDB saves were enabled (`save 3600 1 300 100 60 10000`)
-- `dump.rdb` was 1.8 GB and had just been rewritten
-- copy-on-write was only ~35 MB (`redis_rdb_last_cow_size_bytes`)
-- `rdb_bgsave_in_progress` returned to 0, status `ok`
-- only PID 769 listened on port 6379, and the child disappeared seconds later
+Redis was saving a copy of its data to disk. To do this safely, it makes a second process that shares the same data until something changes. Both processes appear to use 9 GB because they point at the same pages.
 
-`ps` counts shared copy-on-write pages in each process's RSS, so both look ~9 GB. Do not kill the child and do not panic.
+Facts that proved it was harmless:
 
-### How to validate over the next 48 hours
+- The save finished fine
+- The save file was 1.8 GB
+- Only about 35 MB actually changed during the save
+- Only one process listened on port 6379
+- The second process disappeared seconds later
+
+Do not kill it. It is normal.
+
+### How to check over the next two days
 
 ```bash
 echo "load: $(cut -d' ' -f1-3 /proc/loadavg)"
@@ -531,51 +479,50 @@ sudo mysql -N -e "SHOW GLOBAL STATUS WHERE Variable_name IN
   ('Innodb_buffer_pool_reads','Innodb_buffer_pool_read_requests');"
 ```
 
-Health thresholds:
-
-| Signal | Healthy | Act if |
+| Number | Fine | Worry when |
 |---|---|---|
-| Load (4 cores) | < 1.0 | > 3–4 sustained |
-| MemAvailable | > 10% RAM | < 0.5 GB |
-| `si/so` | 0 | consistently non-zero |
-| Redis `used_memory` | below cap with headroom | pinned at cap again |
-| Fragmentation | < 1.3 | > 1.5 |
-| MariaDB hit ratio | > 99.9% | < 99% |
-| Evictions per day | near zero | rising again |
+| Load on 4 CPUs | under 1.0 | over 3–4 for a long time |
+| Free memory | over 1.5 GB | under 0.5 GB |
+| Actual swapping | 0 | happens all the time |
+| Extra space in Redis | under 1.3 | over 1.5 |
+| MariaDB cache success | over 99.9% | under 99% |
+| Keys thrown away daily | near zero | climbing again |
 
 ---
 
-## 13. When You *Should* Add RAM, and a Reusable Checklist
+## 13. When you really should add RAM
 
-The earlier "no" was a decision about **this moment**, not a permanent verdict. Add RAM (or shard, or shrink the dataset) when any trigger fires:
+Our "not yet" was about this moment, not forever. Add memory, split the data, or store less when:
 
-| Trigger | Action |
+| Sign | What to do |
 |---|---|
-| Miss ratio > 25% for 7+ days | Grow Redis / reduce dataset |
-| MemAvailable floor < 0.6 GB | Add RAM |
-| `used_memory_peak` or key count trending up week over week | Capacity planning |
-| Any OOM kill or Redis restart | Urgent capacity fix |
-| Evictions return after the reallocation | Dataset genuinely exceeds available RAM |
+| Failed lookups over 25% for 7 days | Give Redis more room or store less |
+| Free memory stays under 0.6 GB | Add RAM |
+| Stored data keeps growing each week | Plan for more space |
+| Any crash or Redis restart | Fix capacity urgently |
+| Keys get thrown away again after the changes | The data really is too big |
 
-At that point, 16 GB → 32 GB with `maxmemory` 12–16 GB would be the clean fix. But history said none of those triggers were active.
+If that happens, 16 GB → 32 GB with a Redis limit of 12–16 GB would be the clean fix. None of those signs were present, so we did not spend money.
 
-### Reusable checklist
+---
 
-1. **State the question** — waste, leak, or capacity?
-2. **Read-only first.** `free`, `vmstat`, `ps`, `INFO`, `SHOW STATUS`, `swapon`.
-3. **Separate RSS from dataset.** Fragmentation ratio is the health metric, not RSS size.
-4. **Check the other tenants.** A "Redis problem" was partly a MariaDB buffer-pool problem.
-5. **Measure deltas over 24h and 7d**, not single snapshots.
-6. **Watch trends.** Flat counters rule out leaks; rising counters do not.
-7. **Correlate with CPU/load.** A full cache on an idle host is different from a full cache on a saturated host.
-8. **Filter Prometheus by `instance`.** Never trust `result[0]` on a multi-host scrape.
-9. **Validate config files and runtime state separately.** Files can be perfect while the feature is off.
-10. **Validate fstab with `findmnt --verify` before rebooting.**
-11. **Make one change at a time, with rollback ready.**
-12. **Re-measure.** The second snapshot is the only proof the change worked.
+## 14. Simple rules you can reuse
 
-The whole investigation stayed read-only until the evidence was complete. Nothing was restarted, killed, flushed, or deleted.
+1. **Ask what kind of problem it is.** Waste, bug, or not enough room?
+2. **Look without changing anything first.**
+3. **Do not treat "Redis uses 9 GB" as the whole story.** Two tools count memory differently.
+4. **Check the other programs.** What looked like a Redis problem was partly a database setting.
+5. **Compare one day with seven days.** One reading proves nothing.
+6. **Look at the trend.** Flat numbers mean no leak.
+7. **Check if the server is busy.** A full cache on an idle server is different from a full cache on a struggling one.
+8. **Make sure charts are for the right machine.**
+9. **Check files and running state separately.** A perfect config file can still be switched off.
+10. **Check the fstab file before restarting.**
+11. **Change one thing at a time and know how to undo it.**
+12. **Measure again after the change.** The second reading is the only proof.
 
-> No changes were made during diagnosis. Changes were made only after the evidence was complete and the rollback path was known.
+We did not restart, kill, delete, or clear anything while investigating. We changed things only after we had the evidence and a way back.
 
-That is the difference between "we added RAM because Redis was at 8 GB" and "we raised Redis to 10 GB because we proved the RAM was already there and idle."
+> Diagnosis changed nothing. Changes came later, only after we knew what was wrong and how to undo it.
+
+That is the whole difference. We did not add RAM because Redis was at 8 GB. We raised Redis to 10 GB because we proved the memory was already there, idle, and in the wrong hands.
